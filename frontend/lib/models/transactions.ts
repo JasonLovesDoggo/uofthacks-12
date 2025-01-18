@@ -4,7 +4,7 @@ import { MerchantCategorySchema } from "./category";
 export const merchantSchema = z.object({
     name: z.string(),
     category: z.optional(MerchantCategorySchema),
-}); // TODO: add more fields
+});
 
 export type Merchant = z.infer<typeof merchantSchema>;
 
@@ -21,7 +21,7 @@ export const addressSchema = z.object({
     code: z.string(),
     /** Country */
     country: z.string(),
-}); // TODO: add more fields
+});
 
 export type Address = z.infer<typeof addressSchema>;
 
@@ -55,8 +55,8 @@ export type Location = z.infer<typeof locationSchema>;
 export const orderItemSchema = z.object({
     name: z.string(),
     price: z.number(),
-    quantity: z.number(),
-}); // TODO: add more fields
+    quantity: z.optional(z.number()),
+});
 
 export type OrderItem = z.infer<typeof orderItemSchema>;
 
@@ -68,9 +68,9 @@ export const orderSchema = z.object({
     /** Address */
     address: z.optional(addressSchema),
     /** Order items */
-    orderItems: z.array(orderItemSchema),
+    orderItems: z.optional(z.array(orderItemSchema)),
     /** Order total in $ */
     total: z.number(),
-}); // TODO: Check
+});
 
 export type Order = z.infer<typeof orderSchema>;
