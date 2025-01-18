@@ -6,7 +6,7 @@ export default async function HomePage() {
   const session = await auth();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-svh bg-gray-50">
       <nav className="bg-white shadow">
         <div className="container mx-auto flex items-center justify-between px-4 py-4">
           <h1 className="text-xl font-bold">Home</h1>
