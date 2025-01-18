@@ -1,30 +1,39 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-import { auth } from "./lib/auth";
+const authPages = [
+  "/sign-in",
+  "/sign-up",
+  // "/forgot-password",
+  // "/email-verification",
+  // "/reset-password",
+];
 
-const protectedRoutes = ["/"];
-const authRoutes = ["/sign-in", "/sign-up"];
+function isAuthenticated(request: NextRequest): boolean {
+  const token = request.cookies.get("authjs.session-token");
+  return !!token;
+}
+export async function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
 
-export async function middleware(request: NextRequest) {
-  const session = await auth();
-  const isAuthenticated = !!session?.user;
-  const isAuthRoute = authRoutes.includes(request.nextUrl.pathname);
-  const isProtectedRoute = protectedRoutes.includes(request.nextUrl.pathname);
-
-  // Redirect authenticated users away from auth routes
-  if (isAuthenticated && isAuthRoute) {
-    return NextResponse.redirect(new URL("/", request.nextUrl));
+  // If the user is authenticated and trying to access an auth page, redirect to dashboard
+  if (isAuthenticated(req) && authPages.includes(pathname)) {
+    return NextResponse.redirect(new URL("/", req.url));
   }
 
-  // Redirect unauthenticated users from protected routes
-  if (!isAuthenticated && isProtectedRoute) {
-    return NextResponse.redirect(new URL("/sign-in", request.nextUrl));
+  // If the user is not authenticated and trying to access a protected route, redirect to login
+  if (
+    !isAuthenticated(req) &&
+    !authPages.includes(pathname) &&
+    !pathname.startsWith("/reset-password/")
+  ) {
+    return NextResponse.redirect(new URL("/sign-in", req.url));
   }
 
+  // Otherwise, allow the request to continue
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!static|favicon.ico|_next|.*\\..*|api|trpc).*)", "/"],
 };

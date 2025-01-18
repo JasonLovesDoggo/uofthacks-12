@@ -1,9 +1,12 @@
+import { cache } from "react";
+import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import bcrypt from "bcryptjs";
 import type { DefaultSession, NextAuthConfig, Session, User } from "next-auth";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 
+import { db } from "./db";
 import { getUserByEmail } from "./db/services/user";
 import { getGmailProfile } from "./gmail";
 import { LoginSchema } from "./validations/login";
@@ -20,6 +23,18 @@ declare module "next-auth" {
 }
 
 export const authConfig = {
+  adapter: DrizzleAdapter(db),
+  session: {
+    strategy: "jwt",
+  },
+  pages: {
+    signIn: "/sign-in",
+  },
+  cookies: {
+    sessionToken: {
+      name: "authjs.session-token",
+    },
+  },
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
@@ -111,3 +126,16 @@ export const authConfig = {
 } satisfies NextAuthConfig;
 
 export const { auth, signIn, signOut, handlers } = NextAuth(authConfig);
+
+export const getCurrentUser = cache(async () => {
+  try {
+    const session = await auth();
+    if (!session?.user) {
+      return null;
+    }
+    return session.user;
+  } catch (error) {
+    console.error("Error getting current user:", error);
+    return null;
+  }
+});

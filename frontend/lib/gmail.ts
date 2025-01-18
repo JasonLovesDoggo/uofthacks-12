@@ -22,6 +22,8 @@ export async function getGmailProfile(
 
     if (response.ok) {
       const data = await response.json();
+      console.log(data);
+
       return {
         emailAddress: data.emailAddress,
         messagesTotal: data.messagesTotal,
