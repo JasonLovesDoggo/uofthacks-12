@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { NAV_LINKS } from "../config/navigation";
 import { Button } from "./ui/button";
 import MobileMenu from "./ui/mobile-menu";
 import NavLink from "./ui/nav-link";
@@ -21,52 +22,35 @@ const Navbar = ({}: Props) => {
             height={1}
             className="size-8 text-primary"
           />
-          <span className="text-xl font-bold tracking-tighter text-primary">
-            LOGO
+          <span className="font-montserrat text-xl font-bold tracking-tight text-primary">
+            FlowShield
           </span>
         </Link>
 
         {/* Mobile Menu */}
         <MobileMenu />
 
-        {/* Navigation Menu */}
-        <nav className="hidden items-center gap-6 md:flex lg:gap-8">
-          <NavLink
-            href="/"
-            className="transition-colors duration-200 hover:text-primary/80"
-          >
-            Dashboard
-          </NavLink>
-          <NavLink
-            href="/workflows"
-            className="transition-colors duration-200 hover:text-primary/80"
-          >
-            Workflows
-          </NavLink>
-          <NavLink
-            href="/logs"
-            className="transition-colors duration-200 hover:text-primary/80"
-          >
-            Logs
-          </NavLink>
-          <NavLink
-            href="/settings"
-            className="transition-colors duration-200 hover:text-primary/80"
-          >
-            Settings
-          </NavLink>
-        </nav>
+        <div className="flex items-center gap-6">
+          {/* Navigation Menu */}
+          <nav className="hidden items-center gap-6 md:flex">
+            {NAV_LINKS.map((link) => (
+              <NavLink key={link.href} href={link.href}>
+                {link.label}
+              </NavLink>
+            ))}
+          </nav>
 
-        {/* Right-aligned buttons */}
-        <div className="hidden items-center gap-4 md:flex">
-          <Button
-            asChild
-            variant="outline"
-            className="h-9 rounded-lg border-primary/20 bg-primary/5 px-4 font-medium text-primary/90 transition-all hover:bg-primary/10 hover:text-primary"
-          >
-            <Link href="/workflows/create">Create Workflow</Link>
-          </Button>
-          <UserButton />
+          {/* Right-aligned buttons */}
+          <div className="hidden items-center gap-4 md:flex">
+            <Button
+              asChild
+              variant="outline"
+              className="h-9 rounded-lg border-primary/20 bg-primary/5 px-4 font-medium text-primary/90 transition-all hover:bg-primary/10 hover:text-primary"
+            >
+              <Link href="/workflows/create">Create Workflow</Link>
+            </Button>
+            <UserButton />
+          </div>
         </div>
       </div>
     </header>
