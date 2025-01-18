@@ -43,6 +43,8 @@ export const authConfig = {
         params: {
           scope:
             "openid email profile https://www.googleapis.com/auth/gmail.readonly",
+          access_type: "offline",
+          prompt: "consent",
         },
       },
     }),
