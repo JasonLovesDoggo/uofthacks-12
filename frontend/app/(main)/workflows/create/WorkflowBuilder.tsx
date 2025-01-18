@@ -1,96 +1,24 @@
 "use client";
 
 import React, { useCallback, useState } from "react";
-// Basic node components
 import {
   addEdge,
   Connection,
   Edge,
-  Handle,
   Node,
-  Position,
   ReactFlowProvider,
   useEdgesState,
   useNodesState,
 } from "reactflow";
 
+import {
+  ActionNode,
+  ConditionNode,
+  TriggerNode,
+} from "@/components/workflow/nodes";
+
 import { BlockPalette } from "./components/BlockPalette";
 import { Workspace } from "./components/Workspace";
-
-interface NodeData {
-  label: string;
-}
-
-const TriggerNode = ({
-  data,
-  selected,
-}: {
-  data: NodeData;
-  selected?: boolean;
-}) => (
-  <div
-    className={`rounded-lg bg-blue-100 p-3 shadow transition-all ${selected ? "shadow-lg ring-2 ring-blue-500" : ""}`}
-  >
-    <div className="flex items-center gap-2">
-      <span>⚡</span>
-      <span>{data.label}</span>
-    </div>
-    <Handle
-      type="source"
-      position={Position.Bottom}
-      className="!-bottom-2 !h-2 !w-2 !bg-blue-500"
-    />
-  </div>
-);
-
-const ConditionNode = ({
-  data,
-  selected,
-}: {
-  data: NodeData;
-  selected?: boolean;
-}) => (
-  <div
-    className={`rounded-lg bg-green-100 p-3 shadow transition-all ${selected ? "shadow-lg ring-2 ring-green-500" : ""}`}
-  >
-    <Handle
-      type="target"
-      position={Position.Top}
-      className="!-top-2 !h-2 !w-2 !bg-green-500"
-    />
-    <div className="flex items-center gap-2">
-      <span>🔗</span>
-      <span>{data.label}</span>
-    </div>
-    <Handle
-      type="source"
-      position={Position.Bottom}
-      className="!-bottom-2 !h-2 !w-2 !bg-green-500"
-    />
-  </div>
-);
-
-const ActionNode = ({
-  data,
-  selected,
-}: {
-  data: NodeData;
-  selected?: boolean;
-}) => (
-  <div
-    className={`rounded-lg bg-red-100 p-3 shadow transition-all ${selected ? "shadow-lg ring-2 ring-red-500" : ""}`}
-  >
-    <Handle
-      type="target"
-      position={Position.Top}
-      className="!-top-2 !h-2 !w-2 !bg-red-500"
-    />
-    <div className="flex items-center gap-2">
-      <span>⚙️</span>
-      <span>{data.label}</span>
-    </div>
-  </div>
-);
 
 const nodeTypes = {
   trigger: TriggerNode,
