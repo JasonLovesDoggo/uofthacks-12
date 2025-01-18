@@ -1,6 +1,7 @@
 import { Ellipsis } from "lucide-react";
 import { Handle, Position } from "reactflow";
 
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -23,7 +24,12 @@ export const ActionNode = ({
   selected?: boolean;
 }) => (
   <div
-    className={`w-full min-w-[300px] overflow-hidden rounded-sm bg-white shadow-lg transition-all ${selected ? "ring-2 ring-purple-500" : ""}`}
+    className={cn(
+      "group w-full min-w-[300px] overflow-hidden rounded-sm border border-transparent bg-white shadow-lg transition-all hover:border-blue-600",
+      {
+        "border-blue-600": selected,
+      },
+    )}
     style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.1)" }}
   >
     {/* Header */}
@@ -62,12 +68,7 @@ export const ActionNode = ({
     <Handle
       type="target"
       position={Position.Top}
-      className="!-top-2 !h-2 !w-2 !bg-purple-500"
-    />
-    <Handle
-      type="source"
-      position={Position.Bottom}
-      className="!-bottom-2 !h-2 !w-2 !bg-purple-500"
+      className="!size-2 !bg-red-300 group-hover:!bg-red-600"
     />
   </div>
 );

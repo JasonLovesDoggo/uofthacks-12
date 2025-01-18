@@ -1,6 +1,8 @@
 import { Ellipsis, Link2 } from "lucide-react";
 import { Handle, Position } from "reactflow";
 
+import { cn } from "@/lib/utils";
+
 interface NodeData {
   label: string;
   email?: string;
@@ -14,7 +16,12 @@ export const TriggerNode = ({
   selected?: boolean;
 }) => (
   <div
-    className={`min-w-[300px] overflow-hidden rounded-sm bg-white shadow-lg transition-all ${selected ? "ring-2 ring-blue-500" : ""}`}
+    className={cn(
+      "group w-full min-w-[300px] overflow-hidden rounded-sm border border-transparent bg-white shadow-lg transition-all hover:border-blue-600",
+      {
+        "border-blue-600": selected,
+      },
+    )}
   >
     {/* Header */}
     <div className="flex items-center justify-between bg-blue-500 px-4 py-2">
@@ -40,7 +47,7 @@ export const TriggerNode = ({
     <Handle
       type="source"
       position={Position.Bottom}
-      className="!-bottom-2 !h-2 !w-2 !bg-blue-500"
+      className="!size-2 !bg-blue-300 group-hover:!bg-blue-600"
     />
   </div>
 );
