@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 
 import AuthFooter from "./auth-footer";
-import { SignUpForm } from "./sign-up-form";
+import SignUpForm from "./sign-up-form";
 
 export function SignUpCard() {
   return (
