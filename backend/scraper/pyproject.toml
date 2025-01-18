@@ -12,9 +12,15 @@ dependencies = [
     "google-auth>=2.37.0",
     "google-auth-httplib2>=0.2.0",
     "google-auth-oauthlib>=1.2.1",
+    "google-generativeai>=0.8.3",
     "httpx>=0.28.1",
     "litestar[standard]>=2.14.0",
+    "psycopg[binary]>=3.2.4",
+    "pydantic-settings>=2.7.1",
+    "python-jose>=3.3.0",
+    "redis>=5.2.1",
     "schedule>=1.2.2",
+    "sqlalchemy>=2.0.37",
     "watchdog>=6.0.0",
 ]
 
