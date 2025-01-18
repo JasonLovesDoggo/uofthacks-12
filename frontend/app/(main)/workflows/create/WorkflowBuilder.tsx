@@ -1,11 +1,14 @@
 "use client";
 
 import React, { useCallback, useState } from "react";
+// Basic node components
 import {
   addEdge,
   Connection,
   Edge,
+  Handle,
   Node,
+  Position,
   useEdgesState,
   useNodesState,
 } from "reactflow";
@@ -17,27 +20,46 @@ interface NodeData {
   label: string;
 }
 
-// Basic node components
 const TriggerNode = ({ data }: { data: NodeData }) => (
   <div className="rounded-lg bg-blue-100 p-3 shadow">
     <div className="flex items-center gap-2">
       <span>⚡</span>
       <span>{data.label}</span>
     </div>
+    <Handle
+      type="source"
+      position={Position.Bottom}
+      className="!-bottom-2 !h-2 !w-2 !bg-blue-500"
+    />
   </div>
 );
 
 const ConditionNode = ({ data }: { data: NodeData }) => (
   <div className="rounded-lg bg-green-100 p-3 shadow">
+    <Handle
+      type="target"
+      position={Position.Top}
+      className="!-top-2 !h-2 !w-2 !bg-green-500"
+    />
     <div className="flex items-center gap-2">
       <span>🔗</span>
       <span>{data.label}</span>
     </div>
+    <Handle
+      type="source"
+      position={Position.Bottom}
+      className="!-bottom-2 !h-2 !w-2 !bg-green-500"
+    />
   </div>
 );
 
 const ActionNode = ({ data }: { data: NodeData }) => (
   <div className="rounded-lg bg-red-100 p-3 shadow">
+    <Handle
+      type="target"
+      position={Position.Top}
+      className="!-top-2 !h-2 !w-2 !bg-red-500"
+    />
     <div className="flex items-center gap-2">
       <span>⚙️</span>
       <span>{data.label}</span>
