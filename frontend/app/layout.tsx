@@ -3,6 +3,8 @@ import { Geist, Geist_Mono, Manrope, Montserrat } from "next/font/google";
 
 import "./globals.css";
 
+import { Toaster } from "@/components/ui/sonner";
+
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
 //   subsets: ["latin"],
@@ -37,6 +39,7 @@ export default function RootLayout({
       <body
         className={`${manrope.className} ${montserrat.variable} antialiased`}
       >
+        <Toaster richColors position="top-center" theme="light" />
         {children}
       </body>
     </html>

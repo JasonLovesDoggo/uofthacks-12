@@ -1,60 +1,40 @@
 "use client";
 
-import React from "react";
-
-interface BlockPaletteItemProps {
-  type: string;
-  icon: string;
-  label: string;
-  color: string;
-}
-
-const BlockPaletteItem = ({
-  type,
-  icon,
-  label,
-  color,
-}: BlockPaletteItemProps) => {
-  const onDragStart = (event: React.DragEvent) => {
-    event.dataTransfer.setData("application/reactflow", type);
-    event.dataTransfer.effectAllowed = "move";
-  };
-
-  return (
-    <div
-      className={`cursor-pointer rounded-lg p-3 hover:bg-${color}-200 ${`bg-${color}-100`}`}
-      draggable
-      onDragStart={(event) => onDragStart(event)}
-    >
-      <div className="flex items-center gap-2">
-        <span>{icon}</span>
-        <span>{label}</span>
-      </div>
-    </div>
-  );
-};
+import BlockPaletteItem from "./BlockPaletteItem";
 
 interface BlockPaletteProps {
   onDragStart?: (event: React.DragEvent, nodeType: string) => void;
 }
 
 export const BlockPalette = ({ onDragStart }: BlockPaletteProps) => (
-  <div className="w-64 border-r bg-gray-50 p-4">
-    <h2 className="mb-4 text-lg font-semibold">Block Palette</h2>
-    <div className="space-y-2">
+  <aside className="w-80 border-r bg-gray-100 p-6">
+    <h2 className="mb-2 text-xl font-semibold">Block Palette</h2>
+    <p className="text-sm text-gray-500">
+      <span className="font-semibold text-black">Drag and drop</span> a block to
+      the workspace to add it to your workflow.
+    </p>
+
+    <hr className="mb-6 mt-4" />
+
+    <div className="space-y-3">
       <BlockPaletteItem
         type="trigger"
-        icon="⚡"
-        label="Triggers"
+        label="Email"
+        description="When a new email arrives"
         color="blue"
       />
       <BlockPaletteItem
         type="condition"
-        icon="🔗"
-        label="Conditions"
+        label="Condition"
+        description="Add logic to your workflow"
         color="green"
       />
-      <BlockPaletteItem type="action" icon="⚙️" label="Actions" color="red" />
+      <BlockPaletteItem
+        type="action"
+        label="Action"
+        description="Perform an action"
+        color="red"
+      />
     </div>
-  </div>
+  </aside>
 );

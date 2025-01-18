@@ -34,6 +34,11 @@ const WorkflowBuilder = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [selectedEdge, setSelectedEdge] = useState<Edge | null>(null);
+  const [workflowTitle, setWorkflowTitle] = useState("New Workflow");
+
+  const handleTitleUpdate = (newTitle: string) => {
+    setWorkflowTitle(newTitle);
+  };
 
   const onConnect = useCallback(
     (params: Connection) => setEdges((eds) => addEdge(params, eds)),
@@ -112,6 +117,8 @@ const WorkflowBuilder = () => {
           onEdgeClick={onEdgeClick}
           selectedNode={selectedNode}
           selectedEdge={selectedEdge}
+          title={workflowTitle}
+          onSubmit={handleTitleUpdate}
         />
 
         {selectedNode && (
