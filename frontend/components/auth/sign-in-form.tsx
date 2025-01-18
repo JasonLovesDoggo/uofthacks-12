@@ -79,7 +79,7 @@ const SignInForm = ({}: Props) => {
                 <input
                   {...field}
                   placeholder="Enter your email"
-                  className="text-textSecondary placeholder:text-textMuted flex h-10 w-full rounded-sm border border-border border-white/50 bg-white/10 px-3 py-2 lowercase shadow-[0_4px_6px] shadow-black/10 backdrop-blur-sm file:font-medium placeholder:capitalize focus-visible:outline-none focus-visible:ring focus-visible:ring-white disabled:cursor-not-allowed disabled:opacity-50"
+                  className="text-textSecondary placeholder:text-textMuted flex h-10 w-full rounded-sm border border-border bg-white/10 px-3 py-2 lowercase shadow-[0_4px_6px] shadow-black/10 backdrop-blur-sm file:font-medium placeholder:capitalize focus-visible:outline-none focus-visible:ring focus-visible:ring-gray-200 disabled:cursor-not-allowed disabled:opacity-50"
                 />
               </FormControl>
               <FormMessage />
@@ -98,7 +98,7 @@ const SignInForm = ({}: Props) => {
                   {...field}
                   type="password"
                   placeholder="Enter your password"
-                  className="text-textSecondary placeholder:text-textMuted flex h-10 w-full rounded-sm border border-border border-white/50 bg-white/10 px-3 py-2 shadow-[0_4px_6px] shadow-black/10 backdrop-blur-sm file:font-medium focus-visible:outline-none focus-visible:ring focus-visible:ring-white disabled:cursor-not-allowed disabled:opacity-50"
+                  className="text-textSecondary placeholder:text-textMuted flex h-10 w-full rounded-sm border border-border bg-white/10 px-3 py-2 shadow-[0_4px_6px] shadow-black/10 backdrop-blur-sm file:font-medium focus-visible:outline-none focus-visible:ring focus-visible:ring-gray-200 disabled:cursor-not-allowed disabled:opacity-50"
                 />
               </FormControl>
               <FormMessage />
