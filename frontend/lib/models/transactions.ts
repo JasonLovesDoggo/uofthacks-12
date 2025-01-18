@@ -1,8 +1,9 @@
 import { z } from "zod";
+import { MerchantCategorySchema } from "./category";
 
 export const merchantSchema = z.object({
     name: z.string(),
-    category: z.optional(z.string()),
+    category: z.optional(MerchantCategorySchema),
 }); // TODO: add more fields
 
 export type Merchant = z.infer<typeof merchantSchema>;
@@ -13,7 +14,7 @@ export const addressSchema = z.object({
     /** City */
     city: z.string(),
     /** Province or state */
-    state: z.string(),
+    province: z.string(),
     /** Postal code or zip code */
     code: z.string(),
     /** Country */
@@ -21,6 +22,33 @@ export const addressSchema = z.object({
 }); // TODO: add more fields
 
 export type Address = z.infer<typeof addressSchema>;
+
+
+export const countryLocationSchema = z.object({
+    type: z.literal('country'),
+    country: z.string(),
+});
+
+export const provinceLocationSchema = z.object({
+    type: z.literal('province'),
+    province: z.string(),
+    country: z.string(),
+});
+
+export const cityLocationSchema = z.object({
+    type: z.literal('city'),
+    city: z.string(),
+    province: z.string(),
+    country: z.string(),
+});
+
+export const locationSchema = z.union([
+    countryLocationSchema,
+    provinceLocationSchema,
+    cityLocationSchema,
+]);
+
+export type Location = z.infer<typeof locationSchema>;
 
 export const orderItemSchema = z.object({
     name: z.string(),
@@ -31,10 +59,12 @@ export const orderItemSchema = z.object({
 export type OrderItem = z.infer<typeof orderItemSchema>;
 
 export const orderSchema = z.object({
+    /** Date of the order */
+    date: z.date(),
     /** Merchant */
     merchant: merchantSchema,
     /** Address */
-    address: z.optional(z.string()),
+    address: z.optional(addressSchema),
     /** Order items */
     orderItems: z.array(orderItemSchema),
     /** Order total in $ */
