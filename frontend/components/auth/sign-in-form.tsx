@@ -79,7 +79,7 @@ const SignInForm = ({}: Props) => {
                 <input
                   {...field}
                   placeholder="Enter your email"
-                  className="text-textSecondary placeholder:text-textMuted flex h-10 w-full rounded-sm border border-white/50 bg-white/10 px-3 py-2 lowercase shadow-[0_4px_6px] shadow-black/10 backdrop-blur-sm file:font-medium placeholder:capitalize focus-visible:outline-none focus-visible:ring focus-visible:ring-white disabled:cursor-not-allowed disabled:opacity-50"
+                  className="text-textSecondary placeholder:text-textMuted flex h-10 w-full rounded-sm border border-border border-white/50 bg-white/10 px-3 py-2 lowercase shadow-[0_4px_6px] shadow-black/10 backdrop-blur-sm file:font-medium placeholder:capitalize focus-visible:outline-none focus-visible:ring focus-visible:ring-white disabled:cursor-not-allowed disabled:opacity-50"
                 />
               </FormControl>
               <FormMessage />
@@ -98,7 +98,7 @@ const SignInForm = ({}: Props) => {
                   {...field}
                   type="password"
                   placeholder="Enter your password"
-                  className="text-textSecondary placeholder:text-textMuted flex h-10 w-full rounded-sm border border-white/50 bg-white/10 px-3 py-2 shadow-[0_4px_6px] shadow-black/10 backdrop-blur-sm file:font-medium focus-visible:outline-none focus-visible:ring focus-visible:ring-white disabled:cursor-not-allowed disabled:opacity-50"
+                  className="text-textSecondary placeholder:text-textMuted flex h-10 w-full rounded-sm border border-border border-white/50 bg-white/10 px-3 py-2 shadow-[0_4px_6px] shadow-black/10 backdrop-blur-sm file:font-medium focus-visible:outline-none focus-visible:ring focus-visible:ring-white disabled:cursor-not-allowed disabled:opacity-50"
                 />
               </FormControl>
               <FormMessage />
@@ -115,15 +115,12 @@ const SignInForm = ({}: Props) => {
           {isPending ? "Signing In..." : "Sign In"}
         </Button>
       </form>
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
-            Or continue with
-          </span>
-        </div>
+      <div className="relative flex items-center">
+        <div className="flex-grow border-t border-border" />
+        <span className="mx-3 text-sm text-muted-foreground">
+          Or continue with
+        </span>
+        <div className="flex-grow border-t border-border" />
       </div>
       <AuthOptions disabled={isPending} />
     </Form>

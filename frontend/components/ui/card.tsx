@@ -13,7 +13,7 @@ const cardVariants = cva("w-full relative", {
       ],
       dots: [
         "relative mx-auto w-full",
-        "rounded-lg border border-dashed shadow-sm hover:shadow-lg transition-shadow",
+        "rounded-lg border border-dashed shadow-lg hover:shadow-2xl transition-shadow",
         "border-zinc-300 dark:border-zinc-800",
         "px-4 sm:px-6 md:px-8",
       ],

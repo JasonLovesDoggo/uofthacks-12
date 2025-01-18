@@ -1,76 +1,65 @@
 import Image from "next/image";
+import { cva, type VariantProps } from "class-variance-authority";
 import { signIn } from "next-auth/react";
 
 import { cn } from "@/lib/utils";
 
 type Provider = "google" | "github" | "facebook"; // Add more providers as needed
 
+const authOptionsVariants = cva(
+  "w-full rounded-md px-4 py-2 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transform transition-all duration-200 ease-in-out hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-50",
+  {
+    variants: {
+      provider: {
+        google:
+          "bg-white text-gray-700 hover:bg-white border border-gray-300 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700",
+        github:
+          "bg-gray-800 text-white hover:bg-gray-900 border border-gray-800 dark:bg-gray-900 dark:text-gray-100 dark:border-gray-800",
+        facebook:
+          "bg-blue-600 text-white hover:bg-blue-700 border border-blue-600 dark:bg-blue-700 dark:text-gray-100 dark:border-blue-700",
+      },
+      size: {
+        default: "h-10 px-4 py-2",
+        sm: "h-9 px-3",
+        lg: "h-11 px-8",
+      },
+    },
+    defaultVariants: {
+      provider: "google",
+      size: "default",
+    },
+  },
+);
+
 type Props = {
   disabled?: boolean;
   provider?: Provider;
-};
+} & VariantProps<typeof authOptionsVariants>;
 
-const AuthOptions = ({ disabled, provider = "google" }: Props) => {
-  const getProviderDetails = (provider: Provider) => {
-    switch (provider) {
-      case "google":
-        return {
-          icon: "/google-icon.svg",
-          text: "Continue with Google",
-          bgColor: "bg-white",
-          textColor: "text-gray-700",
-          hoverBg: "hover:bg-gray-50",
-          borderColor: "border-gray-300",
-          darkBg: "dark:bg-gray-800",
-          darkText: "dark:text-gray-100",
-          darkBorder: "dark:border-gray-700",
-        };
-      // Add cases for other providers
-      default:
-        return {
-          icon: "",
-          text: "Continue",
-          bgColor: "bg-white",
-          textColor: "text-gray-700",
-          hoverBg: "hover:bg-gray-50",
-          borderColor: "border-gray-300",
-          darkBg: "dark:bg-gray-800",
-          darkText: "dark:text-gray-100",
-          darkBorder: "dark:border-gray-700",
-        };
-    }
+const AuthOptions = ({ disabled, provider = "google", size }: Props) => {
+  const providerDetails = {
+    google: {
+      icon: "/google-icon.svg",
+      text: "Continue with Google",
+    },
+    github: {
+      icon: "",
+      text: "Continue with GitHub",
+    },
+    facebook: {
+      icon: "",
+      text: "Continue with Facebook",
+    },
   };
 
-  const {
-    icon,
-    text,
-    bgColor,
-    textColor,
-    hoverBg,
-    borderColor,
-    darkBg,
-    darkText,
-    darkBorder,
-  } = getProviderDetails(provider);
+  const { icon, text } = providerDetails[provider];
 
   return (
     <button
       type="button"
       onClick={() => signIn(provider)}
       disabled={disabled}
-      className={cn(
-        "w-full rounded-md px-4 py-2 text-sm font-medium shadow-sm",
-        "focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2",
-        "transform transition-all duration-200 ease-in-out hover:scale-[1.02]",
-        "disabled:cursor-not-allowed disabled:opacity-50",
-        bgColor,
-        textColor,
-        hoverBg,
-        borderColor,
-        darkBg,
-        darkText,
-        darkBorder,
-      )}
+      className={cn(authOptionsVariants({ provider, size }))}
     >
       <div className="flex items-center justify-center gap-3">
         {icon && (
