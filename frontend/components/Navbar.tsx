@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "./ui/button";
 import MobileMenu from "./ui/mobile-menu";
 import NavLink from "./ui/nav-link";
+import { UserButton } from "./ui/user-button";
 
 type Props = {};
 
@@ -14,11 +15,11 @@ const Navbar = ({}: Props) => {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
           <Image
-            src="/globe.svg"
+            src="/shield.svg"
             alt="Logo"
-            width={24}
-            height={24}
-            className="size-6 text-primary"
+            width={1}
+            height={1}
+            className="size-8 text-primary"
           />
           <span className="text-xl font-bold tracking-tighter text-primary">
             LOGO
@@ -34,7 +35,7 @@ const Navbar = ({}: Props) => {
             href="/"
             className="transition-colors duration-200 hover:text-primary/80"
           >
-            Home
+            Dashboard
           </NavLink>
           <NavLink
             href="/workflows"
@@ -65,12 +66,7 @@ const Navbar = ({}: Props) => {
           >
             <Link href="/workflows/create">Create Workflow</Link>
           </Button>
-          <Button
-            variant="outline"
-            className="h-9 rounded-lg border-primary/20 bg-primary/5 px-4 font-medium text-primary/90 transition-all hover:bg-primary/10 hover:text-primary"
-          >
-            Sign Out
-          </Button>
+          <UserButton />
         </div>
       </div>
     </header>
