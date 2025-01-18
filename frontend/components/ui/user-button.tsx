@@ -8,7 +8,6 @@ import { Button } from "./button";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./dropdown-menu";
 
@@ -33,11 +32,11 @@ export const UserButton = () => {
           variant="outline"
           className="h-9 rounded-lg border-primary/20 bg-primary/5 px-4 font-medium text-primary/90 transition-all hover:bg-primary/10 hover:text-primary"
         >
-          <Avatar className="mr-2 h-6 w-6">
+          <Avatar className="mr-1 size-6 bg-primary/50">
             <AvatarImage src={image || "/placeholder-avatar.webp"} />
             <AvatarFallback>{initials}</AvatarFallback>
           </Avatar>
-          {name}
+          {name?.split(" ")[0]}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end">

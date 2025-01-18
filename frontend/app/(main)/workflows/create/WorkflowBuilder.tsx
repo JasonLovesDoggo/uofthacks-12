@@ -9,6 +9,7 @@ import {
   Handle,
   Node,
   Position,
+  ReactFlowProvider,
   useEdgesState,
   useNodesState,
 } from "reactflow";
@@ -100,25 +101,27 @@ const WorkflowBuilder = () => {
   );
 
   return (
-    <div className="flex h-full">
-      <BlockPalette />
+    <ReactFlowProvider>
+      <div className="flex h-full">
+        <BlockPalette />
 
-      <Workspace
-        nodes={nodes}
-        edges={edges}
-        nodeTypes={nodeTypes}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-      />
+        <Workspace
+          nodes={nodes}
+          edges={edges}
+          nodeTypes={nodeTypes}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+        />
 
-      {selectedNode && (
-        <div className="w-96 border-l bg-gray-50 p-4">
-          <h2 className="mb-4 text-lg font-semibold">Node Configuration</h2>
-          {/* Configuration form will go here */}
-        </div>
-      )}
-    </div>
+        {selectedNode && (
+          <div className="w-96 border-l bg-gray-50 p-4">
+            <h2 className="mb-4 text-lg font-semibold">Node Configuration</h2>
+            {/* Configuration form will go here */}
+          </div>
+        )}
+      </div>
+    </ReactFlowProvider>
   );
 };
 
