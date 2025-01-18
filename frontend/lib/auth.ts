@@ -5,6 +5,7 @@ import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 
 import { getUserByEmail } from "./db/services/user";
+import { getGmailProfile } from "./gmail";
 import { LoginSchema } from "./validations/login";
 
 declare module "next-auth" {
@@ -55,13 +56,6 @@ export const authConfig = {
   ],
   callbacks: {
     async session({ session, token }: { session: Session; token: any }) {
-      console.log("Google credentials in session callback", {
-        email: token.email,
-        name: token.name,
-        picture: token.picture,
-        sub: token.sub,
-      });
-
       if (token.user) {
         session.user = token.user;
       }
@@ -80,21 +74,12 @@ export const authConfig = {
       profile?: any;
     }) {
       if (account?.provider === "google" && profile) {
-        console.log("Google profile", profile);
-
         const googleProfile = profile as {
           email: string;
           name?: string;
           picture?: string;
           sub: string;
         };
-
-        console.log("Google credentials in jwt callback", {
-          email: googleProfile.email,
-          name: googleProfile.name,
-          picture: googleProfile.picture,
-          sub: googleProfile.sub,
-        });
 
         token.email = googleProfile.email;
         token.name = googleProfile.name || null;
@@ -103,28 +88,10 @@ export const authConfig = {
 
         // Add Gmail-specific data
         if (account.access_token) {
-          try {
-            const gmailResponse = await fetch(
-              "https://gmail.googleapis.com/gmail/v1/users/me/profile",
-              {
-                headers: {
-                  Authorization: `Bearer ${account.access_token}`,
-                },
-              },
-            );
-
-            if (gmailResponse.ok) {
-              const gmailData = await gmailResponse.json();
-              console.log("Gmail profile data:", gmailData);
-              token.gmail = {
-                emailAddress: gmailData.emailAddress,
-                messagesTotal: gmailData.messagesTotal,
-                threadsTotal: gmailData.threadsTotal,
-                historyId: gmailData.historyId,
-              };
-            }
-          } catch (error) {
-            console.error("Error fetching Gmail profile:", error);
+          const gmailProfile = await getGmailProfile(account.access_token);
+          if (gmailProfile) {
+            console.log("Gmail profile data:", gmailProfile);
+            token.gmail = gmailProfile;
           }
         }
       }
