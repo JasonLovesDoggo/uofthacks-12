@@ -1,7 +1,11 @@
+import { Ellipsis, Link2 } from "lucide-react";
 import { Handle, Position } from "reactflow";
+
+import { cn } from "@/lib/utils";
 
 interface NodeData {
   label: string;
+  email?: string;
 }
 
 export const TriggerNode = ({
@@ -12,16 +16,38 @@ export const TriggerNode = ({
   selected?: boolean;
 }) => (
   <div
-    className={`rounded-lg bg-blue-100 p-3 shadow transition-all ${selected ? "shadow-lg ring-2 ring-blue-500" : ""}`}
+    className={cn(
+      "group w-full min-w-[300px] overflow-hidden rounded-sm border border-transparent bg-white shadow-lg transition-all hover:border-blue-600",
+      {
+        "border-blue-600": selected,
+      },
+    )}
   >
-    <div className="flex items-center gap-2">
-      <span>⚡</span>
-      <span>{data.label}</span>
+    {/* Header */}
+    <div className="flex items-center justify-between bg-blue-500 px-4 py-2">
+      <span className="font-medium text-white">Email</span>
+      <button className="rounded-full p-1 text-white hover:bg-white/10">
+        <Ellipsis className="h-4 w-4" />
+      </button>
     </div>
+
+    {/* Content */}
+    <div className="p-4">
+      <div className="flex items-center gap-2 text-gray-600">
+        <Link2 className="h-4 w-4" />
+        <span>
+          Connected to{" "}
+          {data.email || (
+            <span className="font-bold text-gray-400">[EMAIL NOT SET]</span>
+          )}
+        </span>
+      </div>
+    </div>
+
     <Handle
       type="source"
       position={Position.Bottom}
-      className="!-bottom-2 !h-2 !w-2 !bg-blue-500"
+      className="!size-2 !bg-blue-300 group-hover:!bg-blue-600"
     />
   </div>
 );

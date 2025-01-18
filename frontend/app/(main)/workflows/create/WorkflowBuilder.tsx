@@ -35,6 +35,7 @@ const WorkflowBuilder = () => {
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [selectedEdge, setSelectedEdge] = useState<Edge | null>(null);
   const [workflowTitle, setWorkflowTitle] = useState("New Workflow");
+  const [hasTriggerNode, setHasTriggerNode] = useState(false);
 
   const handleTitleUpdate = (newTitle: string) => {
     setWorkflowTitle(newTitle);
@@ -46,16 +47,45 @@ const WorkflowBuilder = () => {
   );
 
   const handleNodesChange = useCallback(
-    (changes: any) => {
-      // Handle node creation from drag-and-drop
-      if (changes.type === "add") {
-        const newNode = changes.item;
-        setNodes((nds) => [...nds, newNode]);
-      } else {
-        onNodesChange(changes);
+    (changes: any[]) => {
+      // Process all changes and track if we need to update trigger node state
+      let shouldUpdateTriggerState = false;
+
+      changes.forEach((change) => {
+        if (change.type === "add" && change.item.type === "trigger") {
+          // Check current nodes for existing trigger
+          const hasTrigger = nodes.some((node) => node.type === "trigger");
+          if (hasTrigger) {
+            // Remove the change to prevent adding multiple triggers
+            changes = changes.filter((c) => c !== change);
+          } else {
+            shouldUpdateTriggerState = true;
+          }
+        } else if (change.type === "remove") {
+          // Check if we're removing a trigger node
+          const removedNode = nodes.find((n) => n.id === change.id);
+          if (removedNode?.type === "trigger") {
+            shouldUpdateTriggerState = true;
+          }
+        }
+      });
+
+      // Apply the filtered changes
+      onNodesChange(changes);
+
+      // Update trigger state if needed
+      if (shouldUpdateTriggerState) {
+        // Use the latest nodes state to determine if we have a trigger
+        setNodes((currentNodes) => {
+          const hasTrigger = currentNodes.some(
+            (node) => node.type === "trigger",
+          );
+          setHasTriggerNode(hasTrigger);
+          return currentNodes;
+        });
       }
     },
-    [onNodesChange, setNodes],
+    [nodes, onNodesChange, setNodes],
   );
 
   // Handle node selection
@@ -80,7 +110,17 @@ const WorkflowBuilder = () => {
     (event: KeyboardEvent) => {
       if (event.key === "Delete" || event.key === "Backspace") {
         if (selectedNode) {
-          setNodes((nds) => nds.filter((node) => node.id !== selectedNode.id));
+          setNodes((nds) => {
+            const updatedNodes = nds.filter(
+              (node) => node.id !== selectedNode.id,
+            );
+            // Update trigger node state based on remaining nodes
+            const stillHasTrigger = updatedNodes.some(
+              (node) => node.type === "trigger",
+            );
+            setHasTriggerNode(stillHasTrigger);
+            return updatedNodes;
+          });
           setSelectedNode(null);
         }
         if (selectedEdge) {
