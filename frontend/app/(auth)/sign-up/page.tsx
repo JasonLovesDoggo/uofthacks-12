@@ -1,4 +1,5 @@
-const SignUpPage = () => {
-  return <div>SignUpPage</div>;
-};
-export default SignUpPage;
+import { SignUpCard } from "@/components/auth/sign-up-card";
+
+export default function SignUpPage() {
+  return <SignUpCard />;
+}
