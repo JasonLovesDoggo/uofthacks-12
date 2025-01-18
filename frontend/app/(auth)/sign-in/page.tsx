@@ -1,6 +1,6 @@
 "use client";
 
-import { signIn } from "@/lib/auth";
+import { signIn } from "next-auth/react";
 
 const SignInPage = () => {
   return (
