@@ -9,6 +9,8 @@ export const merchantSchema = z.object({
 export type Merchant = z.infer<typeof merchantSchema>;
 
 export const addressSchema = z.object({
+    /** Number */
+    number: z.string(),
     /** Street */
     street: z.string(),
     /** City */

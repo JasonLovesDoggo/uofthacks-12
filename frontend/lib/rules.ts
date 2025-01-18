@@ -1,6 +1,10 @@
 import { z } from "zod";
-import { locationSchema } from "./models/transactions";
+import { locationSchema, Order } from "./models/transactions";
 import { MerchantCategorySchema } from "./models/category";
+import { AmountTest } from "./tests/amount";
+import { CategoryTest } from "./tests/category";
+import { TimeTest } from "./tests/time";
+import { LocationTest } from "./tests/location";
 
 export const amountTestSchema = z.object({
     type: z.literal('amount'),
@@ -23,14 +27,18 @@ export const timeTestSchema = z.object({
     condition: z.enum(['gte', 'lte']),
 });
 
+export const testSchema = z.discriminatedUnion('type', [
+    amountTestSchema,
+    categoryTestSchema,
+    locationTestSchema,
+    timeTestSchema,
+]);
+
+export type TestType = z.infer<typeof testSchema>;
+
 export const testRuleSchema = z.object({
     type: z.literal('test'),
-    test: z.discriminatedUnion('type', [
-        amountTestSchema,
-        categoryTestSchema,
-        locationTestSchema,
-        timeTestSchema,
-    ]),
+    test: testSchema,
 });
 
 export type TestRule = z.infer<typeof testRuleSchema>;
@@ -44,20 +52,20 @@ export type Rule = {
 } | {
     type: 'not',
     rule: Rule,
-} | TestRule;
+} | TestRule | {
+    type: 'literal',
+    value: boolean,
+};
 
 export const ruleSchema: z.ZodType<Rule> = z.lazy(() =>
     z.discriminatedUnion('type', [
-        // Leaf node
         testRuleSchema,
 
-        // AND operator (multiple children)
         z.object({
             type: z.literal('and'),
             rules: z.array(ruleSchema).min(1)
         }),
 
-        // OR operator (multiple children)
         z.object({
             type: z.literal('or'),
             rules: z.array(ruleSchema).min(1)
@@ -67,5 +75,61 @@ export const ruleSchema: z.ZodType<Rule> = z.lazy(() =>
             type: z.literal('not'),
             rule: ruleSchema
         }),
+
+        // For testing
+        z.object({
+            type: z.literal('literal'),
+            value: z.boolean(),
+        }),
     ])
 );
+
+/**
+ * Execute a rule on an order
+ * @param rule - The rule to execute
+ * @param order - The order to execute the rule on
+ * @param defaultValue - The default value to return if the rule is unknown
+ * @returns Whether the rule is true or false
+ */
+export function executeRule(rule: Rule, order: Order, defaultValue: boolean = true): boolean {
+    switch (rule.type) {
+        case 'and':
+            return rule.rules.every(r => executeRule(r, order, defaultValue));
+        case 'or':
+            return rule.rules.some(r => executeRule(r, order, defaultValue));
+        case 'not':
+            return !executeRule(rule.rule, order, defaultValue);
+        case 'test':
+            const testResult = executeTestRule(rule.test, order);
+            if (testResult === 'UNKNOWN') {
+                return defaultValue;
+            }
+            return testResult;
+        case 'literal':
+            return rule.value;
+    }
+}
+
+/**
+ * Execute a test rule on an order
+ * @param test - The test rule to execute
+ * @param order - The order to execute the test rule on
+ * @returns Whether the test rule is true or false
+ */
+function executeTestRule(test: TestType, order: Order): boolean | 'UNKNOWN' {
+    switch (test.type) {
+        case 'amount':
+            const amount = test.amount;
+            return new AmountTest(amount).test(order);
+        case 'category':
+            const category = test.category;
+            return new CategoryTest(category).test(order);
+        case 'location':
+            const location = test.location;
+            return new LocationTest(location).test(order);
+        case 'time':
+            const time = test.time;
+            const condition = test.condition;
+            return new TimeTest(time, condition).test(order);
+    }
+}
