@@ -13,7 +13,7 @@ const cardVariants = cva("w-full relative", {
       ],
       dots: [
         "relative mx-auto w-full",
-        "rounded-lg border border-dashed",
+        "rounded-lg border border-dashed shadow-sm hover:shadow-lg transition-shadow",
         "border-zinc-300 dark:border-zinc-800",
         "px-4 sm:px-6 md:px-8",
       ],
@@ -240,10 +240,10 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
           <div className="relative w-full border-x border-zinc-400 dark:border-zinc-700">
             <div className="absolute z-0 grid h-full w-full items-center">
               <section className="absolute z-0 grid h-full w-full grid-cols-2 place-content-between">
-                <div className="my-4 size-1 -translate-x-[2.5px] rounded-full bg-green-400 outline outline-8 outline-gray-50 dark:outline-gray-950 sm:my-6 md:my-8" />
-                <div className="my-4 size-1 translate-x-[2.5px] place-self-end rounded-full bg-green-400 outline outline-8 outline-gray-50 dark:outline-gray-950 sm:my-6 md:my-8" />
-                <div className="my-4 size-1 -translate-x-[2.5px] rounded-full bg-green-400 outline outline-8 outline-gray-50 dark:outline-gray-950 sm:my-6 md:my-8" />
-                <div className="my-4 size-1 translate-x-[2.5px] place-self-end rounded-full bg-green-400 outline outline-8 outline-gray-50 dark:outline-gray-950 sm:my-6 md:my-8" />
+                <div className="my-4 size-1 -translate-x-[2.5px] rounded-full bg-purple-400 outline outline-8 outline-gray-50 dark:outline-gray-950 sm:my-6 md:my-8" />
+                <div className="my-4 size-1 translate-x-[2.5px] place-self-end rounded-full bg-purple-400 outline outline-8 outline-gray-50 dark:outline-gray-950 sm:my-6 md:my-8" />
+                <div className="my-4 size-1 -translate-x-[2.5px] rounded-full bg-purple-400 outline outline-8 outline-gray-50 dark:outline-gray-950 sm:my-6 md:my-8" />
+                <div className="my-4 size-1 translate-x-[2.5px] place-self-end rounded-full bg-purple-400 outline outline-8 outline-gray-50 dark:outline-gray-950 sm:my-6 md:my-8" />
               </section>
             </div>
             <div className="relative z-20 mx-auto py-8">{content}</div>

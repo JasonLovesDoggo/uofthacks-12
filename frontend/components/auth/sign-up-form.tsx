@@ -19,6 +19,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
+import AuthOptions from "./AuthOptions";
+
 const SignUpForm = () => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -131,14 +133,7 @@ const SignUpForm = () => {
           </span>
         </div>
       </div>
-      <button
-        type="button"
-        onClick={() => signIn("google")}
-        disabled={isPending}
-        className="w-full rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-      >
-        Google
-      </button>
+      <AuthOptions disabled={isPending} />
     </Form>
   );
 };
