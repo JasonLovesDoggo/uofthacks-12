@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 type Provider = "google" | "github" | "facebook"; // Add more providers as needed
 
 const authOptionsVariants = cva(
-  "w-full rounded-md px-4 py-2 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transform transition-all duration-200 ease-in-out hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-50",
+  "w-full rounded-md px-4 py-2 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 transform transition-all duration-200 ease-in-out hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
       provider: {

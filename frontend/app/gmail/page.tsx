@@ -8,5 +8,10 @@ export default async function GmailPage() {
     return <div>No access token found</div>;
   }
 
-  return <GmailClient accessToken={accessToken} />;
+  return (
+    <div>
+      <p>{accessToken}</p>
+      <GmailClient accessToken={accessToken} />
+    </div>
+  );
 }
