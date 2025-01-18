@@ -21,8 +21,16 @@ interface NodeData {
   label: string;
 }
 
-const TriggerNode = ({ data }: { data: NodeData }) => (
-  <div className="rounded-lg bg-blue-100 p-3 shadow">
+const TriggerNode = ({
+  data,
+  selected,
+}: {
+  data: NodeData;
+  selected?: boolean;
+}) => (
+  <div
+    className={`rounded-lg bg-blue-100 p-3 shadow transition-all ${selected ? "shadow-lg ring-2 ring-blue-500" : ""}`}
+  >
     <div className="flex items-center gap-2">
       <span>⚡</span>
       <span>{data.label}</span>
@@ -35,8 +43,16 @@ const TriggerNode = ({ data }: { data: NodeData }) => (
   </div>
 );
 
-const ConditionNode = ({ data }: { data: NodeData }) => (
-  <div className="rounded-lg bg-green-100 p-3 shadow">
+const ConditionNode = ({
+  data,
+  selected,
+}: {
+  data: NodeData;
+  selected?: boolean;
+}) => (
+  <div
+    className={`rounded-lg bg-green-100 p-3 shadow transition-all ${selected ? "shadow-lg ring-2 ring-green-500" : ""}`}
+  >
     <Handle
       type="target"
       position={Position.Top}
@@ -54,8 +70,16 @@ const ConditionNode = ({ data }: { data: NodeData }) => (
   </div>
 );
 
-const ActionNode = ({ data }: { data: NodeData }) => (
-  <div className="rounded-lg bg-red-100 p-3 shadow">
+const ActionNode = ({
+  data,
+  selected,
+}: {
+  data: NodeData;
+  selected?: boolean;
+}) => (
+  <div
+    className={`rounded-lg bg-red-100 p-3 shadow transition-all ${selected ? "shadow-lg ring-2 ring-red-500" : ""}`}
+  >
     <Handle
       type="target"
       position={Position.Top}
@@ -81,6 +105,7 @@ const WorkflowBuilder = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+  const [selectedEdge, setSelectedEdge] = useState<Edge | null>(null);
 
   const onConnect = useCallback(
     (params: Connection) => setEdges((eds) => addEdge(params, eds)),
@@ -100,6 +125,48 @@ const WorkflowBuilder = () => {
     [onNodesChange, setNodes],
   );
 
+  // Handle node selection
+  const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
+    setSelectedNode(node);
+  }, []);
+
+  // Handle edge selection
+  const onEdgeClick = useCallback((event: React.MouseEvent, edge: Edge) => {
+    setSelectedEdge(edge);
+    setSelectedNode(null);
+  }, []);
+
+  // Handle background click to deselect
+  const onPaneClick = useCallback(() => {
+    setSelectedNode(null);
+    setSelectedEdge(null);
+  }, []);
+
+  // Handle delete key press
+  const onKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key === "Delete" || event.key === "Backspace") {
+        if (selectedNode) {
+          setNodes((nds) => nds.filter((node) => node.id !== selectedNode.id));
+          setSelectedNode(null);
+        }
+        if (selectedEdge) {
+          setEdges((eds) => eds.filter((edge) => edge.id !== selectedEdge.id));
+          setSelectedEdge(null);
+        }
+      }
+    },
+    [selectedNode, selectedEdge, setNodes, setEdges],
+  );
+
+  // Add and remove keyboard listener
+  React.useEffect(() => {
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [onKeyDown]);
+
   return (
     <ReactFlowProvider>
       <div className="flex h-full">
@@ -109,9 +176,14 @@ const WorkflowBuilder = () => {
           nodes={nodes}
           edges={edges}
           nodeTypes={nodeTypes}
-          onNodesChange={onNodesChange}
+          onNodesChange={handleNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
+          onNodeClick={onNodeClick}
+          onPaneClick={onPaneClick}
+          onEdgeClick={onEdgeClick}
+          selectedNode={selectedNode}
+          selectedEdge={selectedEdge}
         />
 
         {selectedNode && (

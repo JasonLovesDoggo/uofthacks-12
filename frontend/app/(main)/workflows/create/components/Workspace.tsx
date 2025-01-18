@@ -11,13 +11,20 @@ import {
 
 import "reactflow/dist/style.css";
 
+import { Edge, Node } from "reactflow";
+
 interface WorkspaceProps {
-  nodes: any[];
+  nodes: Node[];
   edges: any[];
   nodeTypes: any;
   onNodesChange: (changes: any) => void;
   onEdgesChange: (changes: any) => void;
   onConnect: (connection: any) => void;
+  onNodeClick: (event: React.MouseEvent, node: Node) => void;
+  onPaneClick: () => void;
+  onEdgeClick: (event: React.MouseEvent, edge: Edge) => void;
+  selectedNode: Node | null;
+  selectedEdge: Edge | null;
 }
 
 export const Workspace = ({
@@ -27,6 +34,11 @@ export const Workspace = ({
   onNodesChange,
   onEdgesChange,
   onConnect,
+  onNodeClick,
+  onPaneClick,
+  selectedNode,
+  selectedEdge,
+  onEdgeClick,
 }: WorkspaceProps) => {
   const reactFlowInstance = useReactFlow();
 
@@ -78,7 +90,11 @@ export const Workspace = ({
         nodeTypes={nodeTypes}
         onDrop={onDrop}
         onDragOver={onDragOver}
+        onNodeClick={onNodeClick}
+        onPaneClick={onPaneClick}
         fitView
+        onEdgeClick={onEdgeClick}
+        multiSelectionKeyCode={null}
       >
         <Background />
         <Controls />
