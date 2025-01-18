@@ -11,7 +11,7 @@ const NavLink = ({ children, className, ...props }: NavLinkProps) => {
   return (
     <Link
       className={cn(
-        "group relative flex items-center px-4 py-2 text-center transition-colors hover:bg-gray-100 hover:text-foreground focus:outline-none focus:ring-2 focus:ring-foreground/50 focus:ring-offset-2",
+        "group relative flex items-center px-4 py-2 text-center text-sm font-semibold transition-colors hover:bg-gray-100 hover:text-foreground focus:outline-none focus:ring-2 focus:ring-foreground/50 focus:ring-offset-2",
         className,
       )}
       {...props}

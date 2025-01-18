@@ -114,7 +114,6 @@ export default function MobileMenu() {
               </NavLink>
             </nav>
           </div>
-
           <div className="border-t p-4">
             <div className="flex flex-col space-y-2">
               <Button asChild variant="outline" className="w-full">
