@@ -1,17 +1,13 @@
-import { drizzle } from "drizzle-orm/libsql";
+import { neon } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/neon-http";
 
 declare global {
   var _db: ReturnType<typeof drizzle> | undefined;
 }
 
-export const db =
-  globalThis._db ||
-  drizzle({
-    connection: {
-      url: process.env.TURSO_DATABASE_URL!,
-      authToken: process.env.TURSO_AUTH_TOKEN!,
-    },
-  });
+const sql = neon(process.env.DATABASE_URL!);
+
+export const db = globalThis._db || drizzle({ client: sql });
 
 if (process.env.NODE_ENV !== "production") {
   globalThis._db = db;
