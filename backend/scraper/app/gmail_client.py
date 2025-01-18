@@ -1,11 +1,10 @@
+from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
-from typing import Dict, List, Any
-import time
+from typing import Dict
 from datetime import datetime
-
-from credentials.database import SessionLocal
 from models import Account
+from database import SessionLocal, AccountDB
 
 
 class GmailClient:
@@ -16,7 +15,7 @@ class GmailClient:
     def load_accounts_from_db(self) -> None:
         """Load all accounts from database."""
         with SessionLocal() as db:
-            accounts = db.query(Account).all()
+            accounts = db.query(AccountDB).all()
             for account in accounts:
                 self._add_account_to_store(Account.model_validate(account.__dict__))
 
@@ -34,7 +33,7 @@ class GmailClient:
     def _update_last_check(self, email: str) -> None:
         """Update last_check timestamp in database."""
         with SessionLocal() as db:
-            account = db.query(Account).filter(Account.email == email).first()
+            account = db.query(AccountDB).filter(AccountDB.email == email).first()
             if account:
                 account.last_check = datetime.utcnow()
                 db.commit()
@@ -50,7 +49,7 @@ class GmailClient:
                 # Update token in database
                 with SessionLocal() as db:
                     account = (
-                        db.query(Account).filter(Account.email == email).first()
+                        db.query(AccountDB).filter(AccountDB.email == email).first()
                     )
                     if account:
                         account.access_token = credentials.token

@@ -1,15 +1,18 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr
 from typing import List, Optional
 from datetime import datetime
+
 
 class Merchant(BaseModel):
     name: str
     category: Optional[str] = None
 
+
 class OrderItem(BaseModel):
     name: str
     price: float
     quantity: int
+
 
 class Order(BaseModel):
     merchant: Merchant
@@ -17,9 +20,11 @@ class Order(BaseModel):
     orderItems: List[OrderItem]
     total: float
 
+
 class IngestRequest(BaseModel):
     email: EmailStr
     order: Order
+
 
 class Account(BaseModel):
     id: int
