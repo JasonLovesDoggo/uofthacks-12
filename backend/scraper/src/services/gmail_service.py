@@ -1,18 +1,19 @@
+import traceback
+
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
-from ..models import Account
-from ..ai import extract_order_details_with_ai
+from ..ai import extract_order_details_with_ai, detect_if_ecommerce_email
 from schemas.orders import IngestRequest
 from .egress import call_external_api
 import logging
 from google.auth.transport.requests import Request
-
+from sqlalchemy.future import select
 from config.settings import get_settings
-from ..database import SessionLocal
+from ..database import async_session, Account
 
 settings = get_settings()
 
-logging.basicConfig(level=logging.INFO)
+log = logging.getLogger(__name__)
 
 
 def get_gmail_service(credentials):
@@ -20,8 +21,15 @@ def get_gmail_service(credentials):
 
 
 async def poll_gmail_accounts():
-    async with SessionLocal() as db:
-        accounts = db.query(Account).all()
+    async with async_session() as db:
+        # Use select statement and get scalars to get actual model instances
+        stmt = select(Account)
+        results = await db.execute(stmt)
+        accounts = results.scalars().all()
+
+        logging.info(f"Found {len(accounts)} accounts to process")
+
+        # Iterate over the actual Account instances
         for account in accounts:
             creds_info = {
                 "refresh_token": account.refresh_token,
@@ -30,38 +38,56 @@ async def poll_gmail_accounts():
                 "client_secret": settings.GMAIL_CLIENT_SECRET,
                 "scopes": ["https://www.googleapis.com/auth/gmail.readonly"],
             }
-            creds = Credentials.from_authorized_user_info(info=creds_info)
-            if creds.expired and creds.refresh_token:
-                creds.refresh(Request())
-            service = get_gmail_service(creds)
+
+            if not account.access_token:
+                logging.warning(
+                    f"Account {account.userId} has no refresh token, skipping"
+                )
+                continue
+
             try:
+                creds = Credentials.from_authorized_user_info(info=creds_info)
+                if creds.expired and creds.refresh_token:
+                    creds.refresh(Request())
+
+                service = get_gmail_service(creds)
+
                 results = (
                     service.users()
                     .messages()
                     .list(userId="me", labelIds=["UNREAD", "INBOX"])
                     .execute()
                 )
+
                 messages = results.get("messages", [])
-                print(f"Found {len(messages)} new emails; processing...")
+                logging.info(
+                    f"Found {len(messages)} new emails for account {account.userId}"
+                )
+
                 for msg in messages:
-                    # Fetch the raw email content
-                    msg_data = (
-                        service.users()
-                        .messages()
-                        .get(userId="me", id=msg["id"])
-                        .execute()
-                    )
-                    email_content = msg_data.get("raw", "")
-                    print(f"Processing email: {email_content}")
-                    # Decode email content if necessary
-                    # ...
-                    # Process the email content with AI
+                    print(f"{account.userId}: {msg=}")
                     try:
+                        msg_data = (
+                            service.users()
+                            .messages()
+                            .get(userId="me", id=msg["id"])
+                            .execute()
+                        )
+                        email_content = msg_data.get("raw", "")
+                        if not detect_if_ecommerce_email(email_content):
+                            log.debug(f"NOT ECOMMERCE: {email_content[:]}")
+                            continue
+
+                        # Process the email content with AI
                         order_data = extract_order_details_with_ai(email_content)
-                        ingest_request = IngestRequest(**order_data)
-                        # Call external API
+                        ingest_request = IngestRequest.model_construct(**order_data)
                         await call_external_api(ingest_request)
+
                     except Exception as e:
-                        logging.error(f"Error processing email: {e}")
+                        logging.error(
+                            f"Error processing email {msg['id']} for account {account.userId}: {e}"
+                        )
+                        print(traceback.format_exc())
+
             except Exception as e:
-                logging.error(f"Error: {e}")
+                logging.error(f"Error processing account {account.userId}: {e}")

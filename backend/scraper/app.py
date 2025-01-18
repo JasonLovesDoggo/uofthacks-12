@@ -1,3 +1,4 @@
+import sys
 from datetime import datetime, UTC
 
 import uvicorn
@@ -14,8 +15,15 @@ from config.settings import get_settings
 import logging
 
 settings = get_settings()
-
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(
+    level=logging.DEBUG,  # Set the log level to DEBUG
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",  # Log format
+    handlers=[
+        logging.FileHandler("app.log"),  # Write logs to a file
+        logging.StreamHandler(sys.stdout),  # Write logs to the terminal
+    ],
+)
+logging.getLogger("googleapicliet.discovery_cache").setLevel(logging.ERROR)
 scheduler = AsyncIOScheduler()
 
 job: Job = None
@@ -27,7 +35,14 @@ async def process_emails():
 
 async def startup() -> None:
     global job
-    job = scheduler.add_job(process_emails, "interval", minutes=5)
+    job = scheduler.add_job(
+        process_emails,
+        "interval",
+        minutes=5,
+        next_run_time=datetime.now(UTC),
+        misfire_grace_time=30,
+        max_instances=1,
+    )
     scheduler.start()
 
 
@@ -37,12 +52,7 @@ class EmailProcessingController(Controller):
     @post("/trigger")
     async def trigger_process_emails(self) -> JobDetailsResponse:
         global job
-        if job:
-            # Remove the existing job
-            job.remove()
-
-        # Restart the job
-        job = scheduler.add_job(process_emails, "interval", minutes=5)
+        job.modify(next_run_time=datetime.now())
         return self.get_response(job)
 
     @get("/next_run")
