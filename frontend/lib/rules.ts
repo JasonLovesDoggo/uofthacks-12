@@ -91,7 +91,7 @@ export const ruleSchema: z.ZodType<Rule> = z.lazy(() =>
  * @param defaultValue - The default value to return if the rule is unknown
  * @returns Whether the rule is true or false
  */
-export function executeRule(rule: Rule, order: Order, defaultValue: boolean = true): boolean {
+export function executeRule(rule: Rule, order: Order, defaultValue: boolean = false): boolean {
     switch (rule.type) {
         case 'and':
             return rule.rules.every(r => executeRule(r, order, defaultValue));

@@ -1,5 +1,7 @@
-import { integer, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { integer, jsonb, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import type { AdapterAccountType } from "next-auth/adapters";
+import { Order } from "@/lib/models/transactions";
+import { Rule } from "../rules";
 
 export const users = pgTable("user", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -13,6 +15,8 @@ export const users = pgTable("user", {
     .notNull()
     .defaultNow()
     .$onUpdate(() => new Date()),
+
+  rule: jsonb("rule").$type<Rule>(),
 });
 
 export const accounts = pgTable("account", {
@@ -44,3 +48,12 @@ export const verificationTokens = pgTable("verificationToken", {
   token: text("token").notNull(),
   expires: timestamp("expires").notNull(),
 });
+
+export const alerts = pgTable("alert", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("userId").notNull(),
+  order: jsonb("order").notNull().$type<Order>(),
+});
+
+export type CreateAlert = typeof alerts.$inferInsert;
+export type Alert = typeof alerts.$inferSelect;

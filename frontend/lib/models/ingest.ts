@@ -2,8 +2,8 @@ import { z } from "zod";
 import { orderSchema } from "./transactions";
 
 export const ingestRequestSchema = z.array(z.object({
-    /** Email */
-    email: z.string().email(),
+    /** User ID */
+    userId: z.string(),
     /** Order */
     order: orderSchema,
 }));
