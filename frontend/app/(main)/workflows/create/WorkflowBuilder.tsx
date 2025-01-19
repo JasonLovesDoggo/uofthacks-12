@@ -35,7 +35,6 @@ const WorkflowBuilder = () => {
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [selectedEdge, setSelectedEdge] = useState<Edge | null>(null);
   const [workflowTitle, setWorkflowTitle] = useState("New Workflow");
-  const [hasTriggerNode, setHasTriggerNode] = useState(false);
 
   const handleTitleUpdate = (newTitle: string) => {
     setWorkflowTitle(newTitle);
@@ -77,10 +76,6 @@ const WorkflowBuilder = () => {
       if (shouldUpdateTriggerState) {
         // Use the latest nodes state to determine if we have a trigger
         setNodes((currentNodes) => {
-          const hasTrigger = currentNodes.some(
-            (node) => node.type === "trigger",
-          );
-          setHasTriggerNode(hasTrigger);
           return currentNodes;
         });
       }
@@ -114,11 +109,6 @@ const WorkflowBuilder = () => {
             const updatedNodes = nds.filter(
               (node) => node.id !== selectedNode.id,
             );
-            // Update trigger node state based on remaining nodes
-            const stillHasTrigger = updatedNodes.some(
-              (node) => node.type === "trigger",
-            );
-            setHasTriggerNode(stillHasTrigger);
             return updatedNodes;
           });
           setSelectedNode(null);
