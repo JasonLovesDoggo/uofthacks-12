@@ -16,7 +16,9 @@ import {
   useSelectionManagement,
   useWorkflowTitle,
 } from "../../hooks";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { BlockPalette } from "./BlockPalette";
+import { Chat } from "./Chat";
 import { Workspace } from "./Workspace";
 
 const nodeTypes: NodeTypes = {
@@ -76,14 +78,29 @@ const WorkflowBuilder = () => {
         />
 
         {/* Right sidebar */}
-        <div className="w-[360px] shrink-0 border-l bg-gray-50 p-4">
-          {workflowData.length > 0 ? (
-            <WorkflowDataDisplay data={workflowData} />
-          ) : (
-            <div className="text-center text-gray-500">
-              Add nodes to see workflow data
-            </div>
-          )}
+        <div className="w-[360px] shrink-0 border-l bg-gray-50">
+          <Tabs defaultValue="workflow" className="h-full">
+            <TabsList className="w-full rounded-none">
+              <TabsTrigger value="workflow" className="flex-1">
+                Workflow
+              </TabsTrigger>
+              <TabsTrigger value="chat" className="flex-1">
+                Chat
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="workflow" className="h-[calc(100%-40px)] p-4">
+              {workflowData.length > 0 ? (
+                <WorkflowDataDisplay data={workflowData} />
+              ) : (
+                <div className="text-center text-gray-500">
+                  Add nodes to see workflow data
+                </div>
+              )}
+            </TabsContent>
+            <TabsContent value="chat" className="h-[calc(100%-64px)]">
+              <Chat setNodes={setNodes} setEdges={setEdges} />
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </ReactFlowProvider>
