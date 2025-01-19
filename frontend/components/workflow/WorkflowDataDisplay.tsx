@@ -19,6 +19,8 @@ export const WorkflowDataDisplay = ({
   data,
   className,
 }: WorkflowDataDisplayProps) => {
+  console.log("DATA", data);
+
   const formatNodeData = (node: WorkflowNode) => {
     switch (node.type) {
       case "trigger":
@@ -54,16 +56,30 @@ export const WorkflowDataDisplay = ({
     node: WorkflowNode;
     level: number;
     isLastInGroup: boolean;
+    path: string[];
   }
 
   const buildWorkflowTree = (nodes: WorkflowNode[]): WorkflowTreeItem[] => {
     const trigger = nodes.find((n) => n.type === "trigger");
     if (!trigger) return [];
 
+    // Keep track of processed nodes to avoid duplicates
+    const processedNodes = new Set<string>();
+
     const buildBranch = (
       node: WorkflowNode,
       level: number,
+      parentPath: string[] = [],
     ): WorkflowTreeItem[] => {
+      // Create a unique path for this node including its ancestors
+      const currentPath = [...parentPath, node.id].join("-");
+
+      // If we've seen this exact path before, skip it to avoid duplicates
+      if (processedNodes.has(currentPath)) {
+        return [];
+      }
+      processedNodes.add(currentPath);
+
       const children = nodes.filter((n) =>
         node.connections.targets.includes(n.id),
       );
@@ -73,8 +89,11 @@ export const WorkflowDataDisplay = ({
           node,
           level,
           isLastInGroup: children.length === 0,
+          path: [...parentPath, node.id],
         },
-        ...children.flatMap((child) => buildBranch(child, level + 1)),
+        ...children.flatMap((child) =>
+          buildBranch(child, level + 1, [...parentPath, node.id]),
+        ),
       ];
     };
 
@@ -87,8 +106,9 @@ export const WorkflowDataDisplay = ({
   ) => {
     if (node.type === "trigger") {
       const targetCount = node.connections.targets.length;
+
       if (targetCount === 0) return "No actions configured";
-      return `Triggers ${targetCount} ${
+      return `Triggers ${targetCount} possible ${
         targetCount === 1 ? "action" : "actions"
       }`;
     }
@@ -132,9 +152,9 @@ export const WorkflowDataDisplay = ({
     <div className={cn("space-y-4", className)}>
       <h3 className="font-medium text-gray-500">Workflow Structure</h3>
       <div className="space-y-2">
-        {buildWorkflowTree(data).map(({ node, level, isLastInGroup }) => (
+        {buildWorkflowTree(data).map(({ node, level, isLastInGroup, path }) => (
           <div
-            key={node.id}
+            key={path.join("-")}
             className={cn(
               "rounded-md border bg-white p-3 shadow-sm",
               level > 0 && "ml-4",

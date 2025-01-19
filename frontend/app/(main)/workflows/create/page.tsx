@@ -1,4 +1,4 @@
-import WorkflowBuilder from "./WorkflowBuilder";
+import WorkflowBuilder from "@/components/workflow/WorkflowBuilder";
 
 const CreateWorkflowPage = () => {
   return (

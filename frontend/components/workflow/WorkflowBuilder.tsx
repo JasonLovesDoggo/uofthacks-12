@@ -10,14 +10,14 @@ import {
 } from "@/components/workflow/nodes";
 import { WorkflowDataDisplay } from "@/components/workflow/WorkflowDataDisplay";
 
-import { BlockPalette } from "./components/BlockPalette";
-import { Workspace } from "./components/Workspace";
 import {
   useFlowManagement,
   useFlowSubmission,
   useSelectionManagement,
   useWorkflowTitle,
-} from "./hooks";
+} from "../../hooks";
+import { BlockPalette } from "./BlockPalette";
+import { Workspace } from "./Workspace";
 
 const nodeTypes: NodeTypes = {
   trigger: TriggerNode,
