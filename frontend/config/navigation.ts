@@ -4,7 +4,7 @@ export const NAV_LINKS = [
     label: "Dashboard",
   },
   {
-    href: "/workflows",
+    href: "/workflows/create",
     label: "Workflows",
   },
   {
