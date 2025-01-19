@@ -86,6 +86,7 @@ export const useFlowManagement = () => {
         setNodes((currentNodes) => currentNodes);
       }
     },
+
     [nodes, onNodesChange, setNodes],
   );
 
