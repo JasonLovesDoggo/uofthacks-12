@@ -6,14 +6,12 @@ import { orders } from "@/lib/db/schema";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
-interface OrderPageProps {
-  params: {
-    id: string;
-  };
-}
-
-export default async function OrderPage({ params }: OrderPageProps) {
-  const { id } = params;
+export default async function OrderPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
 
   const order = await db.query.orders.findFirst({
     where: eq(orders.id, id),
