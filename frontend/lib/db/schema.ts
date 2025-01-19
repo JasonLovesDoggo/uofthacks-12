@@ -18,6 +18,7 @@ export const users = pgTable("user", {
     .defaultNow()
     .$onUpdate(() => new Date()),
 
+  // workflow: jsonb("workflow").$type<WorkflowNode>(), // TODO
   rule: jsonb("rule").$type<Rule>(),
 });
 

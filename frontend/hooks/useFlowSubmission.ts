@@ -65,7 +65,7 @@ const transformWorkflowData = (nodes: any[]): WorkflowNode | null => {
 };
 
 export const useFlowSubmission = () => {
-  const handleSubmit = useCallback((workflowData: any[]) => {
+  const handleSubmit = useCallback(async (workflowData: any[]) => {
     const structuredWorkflow = transformWorkflowData(workflowData);
 
     if (!structuredWorkflow) {
@@ -74,6 +74,17 @@ export const useFlowSubmission = () => {
     }
 
     console.log("Structured workflow data:", structuredWorkflow);
+
+    const response = await fetch("/api/workflows", {
+      method: "POST",
+      body: JSON.stringify(structuredWorkflow),
+    });
+
+    if (!response.ok) {
+      toast.error("Failed to save workflow");
+      return;
+    }
+
     toast.success("Workflow saved");
   }, []);
 
