@@ -13,8 +13,10 @@ import { toast } from "sonner";
 import "reactflow/dist/style.css";
 
 import Image from "next/image";
-import { Pencil } from "lucide-react";
+import { ArrowLeft, Pencil, Save, Trash2 } from "lucide-react";
 import { Edge, Node } from "reactflow";
+
+import { Button } from "@/components/ui/button";
 
 interface WorkspaceProps {
   nodes: Node[];
@@ -101,67 +103,112 @@ export const Workspace = ({
   };
 
   return (
-    <div className="relative flex-1">
-      <div className="absolute left-4 top-4 z-50">
-        {isEditing ? (
-          <input
-            type="text"
-            value={currentTitle}
-            onChange={handleTitleChange}
-            onBlur={handleBlur}
-            autoFocus
-            className="border-b-2 border-gray-300 bg-transparent text-lg font-semibold focus:border-blue-500 focus:outline-none"
-          />
-        ) : (
-          <div className="group flex items-center gap-1.5 border-b-2">
-            <h1 className="cursor-pointer text-lg font-semibold text-gray-500">
-              {currentTitle}
-            </h1>
-            <button
-              className="text-gray-500 focus:outline-none group-hover:text-blue-500"
-              onClick={() => setIsEditing(true)}
-            >
-              <Pencil className="size-4" />
-            </button>
+    <div className="relative flex h-full w-full flex-col">
+      <nav className="flex h-14 items-center justify-between border-b bg-background px-4">
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="p-1 duration-300 hover:text-primary"
+          >
+            <ArrowLeft className="size-5" />
+          </Button>
+          <div className="flex items-center gap-1.5">
+            {isEditing ? (
+              <input
+                type="text"
+                value={currentTitle}
+                onChange={handleTitleChange}
+                onBlur={handleBlur}
+                autoFocus
+                className="border-b-2 border-gray-300 bg-transparent text-lg font-semibold focus:border-blue-500 focus:outline-none"
+              />
+            ) : (
+              <div className="group flex items-center gap-1.5">
+                <h1 className="cursor-pointer text-lg font-semibold text-gray-500">
+                  {currentTitle}
+                </h1>
+                <button
+                  className="text-gray-500 focus:outline-none group-hover:text-blue-500"
+                  onClick={() => setIsEditing(true)}
+                >
+                  <Pencil className="size-4" />
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="duration-300 hover:text-primary"
+            onClick={() => {
+              onNodesChange([
+                { type: "remove", id: nodes.map((node) => node.id) },
+              ]);
+              onEdgesChange([
+                { type: "remove", id: edges.map((edge) => edge.id) },
+              ]);
+              toast.success("Workflow cleared");
+            }}
+          >
+            <Trash2 className="size-5" />
+          </Button>
+          <Button
+            onClick={() => {
+              console.log("Workflow Details:");
+              console.log("Title:", currentTitle);
+              console.log("Nodes:", nodes);
+              console.log("Edges:", edges);
+              console.log("Selected Node:", selectedNode);
+              console.log("Selected Edge:", selectedEdge);
+              toast.success("Workflow saved");
+            }}
+          >
+            <Save className="mr-2 h-5 w-5" />
+            Save
+          </Button>
+        </div>
+      </nav>
+
+      <div className="relative flex-1">
+        {nodes.length === 0 && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <h3 className="font-montserrat text-xl font-semibold text-gray-500">
+              Add a block to get started.
+            </h3>
+            <p className="mb-4 font-semibold text-gray-400">Drag and drop!🎉</p>
+            <Image
+              src="/empty-workspace.svg"
+              alt="Empty workspace"
+              width={1}
+              height={1}
+              className="w-60"
+            />
           </div>
         )}
+
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          nodeTypes={nodeTypes}
+          onDrop={onDrop}
+          onDragOver={onDragOver}
+          onNodeClick={onNodeClick}
+          onPaneClick={onPaneClick}
+          fitView
+          onEdgeClick={onEdgeClick}
+          multiSelectionKeyCode={null}
+        >
+          <Background />
+          <Controls />
+          <MiniMap />
+        </ReactFlow>
       </div>
-
-      {nodes.length === 0 ? (
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <h3 className="font-montserrat text-xl font-semibold text-gray-500">
-            Add a block to get started.
-          </h3>
-          <p className="mb-4 font-semibold text-gray-400">Drag and drop!🎉</p>
-          <Image
-            src="/empty-workspace.svg"
-            alt="Empty workspace"
-            width={1}
-            height={1}
-            className="w-60"
-          />
-        </div>
-      ) : null}
-
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        nodeTypes={nodeTypes}
-        onDrop={onDrop}
-        onDragOver={onDragOver}
-        onNodeClick={onNodeClick}
-        onPaneClick={onPaneClick}
-        fitView
-        onEdgeClick={onEdgeClick}
-        multiSelectionKeyCode={null}
-      >
-        <Background />
-        <Controls />
-        <MiniMap />
-      </ReactFlow>
     </div>
   );
 };

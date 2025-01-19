@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import { ReactFlowProvider } from "reactflow";
 
-import { Button } from "@/components/ui/button";
 import {
   ActionNode,
   ConditionNode,
@@ -74,7 +73,7 @@ const WorkflowBuilder = () => {
         />
 
         {/* Right sidebar */}
-        <div className="w-96 border-l bg-gray-50 p-4">
+        <div className="w-[360px] shrink-0 border-l bg-gray-50 p-4">
           {workflowData.length > 0 ? (
             <WorkflowDataDisplay data={workflowData} />
           ) : (

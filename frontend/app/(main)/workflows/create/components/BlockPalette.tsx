@@ -7,7 +7,7 @@ interface BlockPaletteProps {
 }
 
 export const BlockPalette = ({ onDragStart }: BlockPaletteProps) => (
-  <aside className="w-[360px] border-r bg-gray-100 p-6">
+  <aside className="w-[360px] shrink-0 border-r bg-gray-100 p-6">
     <h2 className="mb-2 text-xl font-semibold">Block Palette</h2>
     <p className="text-sm text-gray-500">
       <span className="font-semibold text-black">Drag and drop</span> a block to
