@@ -77,8 +77,9 @@ export const Workspace = ({
         y: event.clientY - event.currentTarget.getBoundingClientRect().top,
       });
 
+      // Generate a unique ID for the node
       const newNode = {
-        id: `${type}-${Date.now()}`,
+        id: crypto.randomUUID(),
         type,
         position,
         data: { label: `${type} node` },

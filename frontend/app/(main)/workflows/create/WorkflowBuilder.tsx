@@ -1,13 +1,15 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ReactFlowProvider } from "reactflow";
 
+import { Button } from "@/components/ui/button";
 import {
   ActionNode,
   ConditionNode,
   TriggerNode,
 } from "@/components/workflow/nodes";
+import { WorkflowDataDisplay } from "@/components/workflow/WorkflowDataDisplay";
 
 import { BlockPalette } from "./components/BlockPalette";
 import { Workspace } from "./components/Workspace";
@@ -32,7 +34,16 @@ const WorkflowBuilder = () => {
     handleNodesChange,
     onEdgesChange,
     onConnect,
+    getWorkflowData,
   } = useFlowManagement();
+
+  // Keep workflow data updated
+  const [workflowData, setWorkflowData] = useState(getWorkflowData());
+
+  // Update workflow data whenever nodes, edges, or node data changes
+  useEffect(() => {
+    setWorkflowData(getWorkflowData());
+  }, [nodes, edges, getWorkflowData]);
 
   const { selectedNode, selectedEdge, onNodeClick, onEdgeClick, onPaneClick } =
     useSelectionManagement(setNodes, setEdges);
@@ -42,8 +53,10 @@ const WorkflowBuilder = () => {
   return (
     <ReactFlowProvider>
       <div className="flex h-full">
+        {/* The left sidebar containing block items */}
         <BlockPalette />
 
+        {/* The workspace containing the nodes and edges */}
         <Workspace
           nodes={nodes}
           edges={edges}
@@ -60,12 +73,16 @@ const WorkflowBuilder = () => {
           onSubmit={handleTitleUpdate}
         />
 
-        {selectedNode && (
-          <div className="w-96 border-l bg-gray-50 p-4">
-            <h2 className="mb-4 text-lg font-semibold">Node Configuration</h2>
-            {/* Configuration form will go here */}
-          </div>
-        )}
+        {/* Right sidebar */}
+        <div className="w-96 border-l bg-gray-50 p-4">
+          {workflowData.length > 0 ? (
+            <WorkflowDataDisplay data={workflowData} />
+          ) : (
+            <div className="text-center text-gray-500">
+              Add nodes to see workflow data
+            </div>
+          )}
+        </div>
       </div>
     </ReactFlowProvider>
   );
