@@ -7,50 +7,39 @@ import {
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
-  SortingFn,
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 
-import { Log, Logs } from "@/lib/models/logs";
-import { OrderItem } from "@/lib/models/transactions";
+import { Order } from "@/lib/db/schema";
 import { cn } from "@/lib/utils";
 
-//custom sorting logic for one of our enum columns
-const sortStatusFn: SortingFn<OrderItem> = (rowA, rowB, _columnId) => {
-  const statusA = rowA.original.status;
-  const statusB = rowB.original.status;
-  const statusOrder = ["single", "complicated", "relationship"];
-  return statusOrder.indexOf(statusA) - statusOrder.indexOf(statusB);
-};
-
-export interface LogsTableProps {
-  data: Logs;
+export interface OrdersTableProps {
+  data: Order[];
 }
 
-export function LogsTable({ data }: LogsTableProps) {
+export function OrdersTable({ data }: OrdersTableProps) {
   const router = useRouter();
-
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
-  const columns = React.useMemo<ColumnDef<Log>[]>(
+  const columns = React.useMemo<ColumnDef<Order>[]>(
     () => [
       {
-        accessorKey: "merchant_name",
+        accessorKey: "merchantName",
         header: "Merchant",
         cell: (info) => (
-          <p className="text-sm font-medium">{info.getValue()}</p>
+          <p className="text-sm font-medium">{info.getValue<string>()}</p>
         ),
       },
       {
         accessorKey: "severity",
         header: "Severity",
         cell: (info) => {
-          const severity = (info.getValue() as string).toUpperCase();
+          const severity = info.getValue<string>().toUpperCase();
           return (
             <span
               className={`inline-flex items-center rounded-md px-[8px] py-[6px] text-xs font-bold ${
-                severity === "critical"
+                severity === "CRITICAL"
                   ? "bg-red-100 text-red-700"
                   : "bg-yellow-100 text-yellow-700"
               }`}
@@ -61,26 +50,32 @@ export function LogsTable({ data }: LogsTableProps) {
         },
       },
       {
-        accessorKey: "order_items",
+        accessorKey: "orderItems",
         header: "Items",
-        cell: (info) => (
-          <p className="text-sm text-gray-600">{info.getValue()}</p>
-        ),
+        cell: (info) => {
+          const items =
+            info.getValue<
+              Array<{ name: string; price: number; quantity: number }>
+            >();
+          return (
+            <p className="text-sm text-gray-600">
+              {items.map((item) => item.name).join(", ")}
+            </p>
+          );
+        },
       },
       {
         accessorKey: "total",
         header: "Amount",
         cell: (info) => (
-          <p className="text-sm font-medium">
-            ${(info.getValue() as number).toFixed(2)}
-          </p>
+          <p className="text-sm font-medium">${info.getValue<number>()}</p>
         ),
       },
       {
-        accessorKey: "merchant_location",
+        accessorKey: "merchantLocation",
         header: "Location",
         cell: (info) => (
-          <p className="text-sm text-gray-600">{info.getValue()}</p>
+          <p className="text-sm text-gray-600">{info.getValue<string>()}</p>
         ),
       },
       {
@@ -88,7 +83,7 @@ export function LogsTable({ data }: LogsTableProps) {
         header: "Date",
         cell: (info) => (
           <p className="text-sm text-gray-600">
-            {info.getValue()?.toLocaleDateString()}
+            {info.getValue<Date>().toLocaleDateString()}
           </p>
         ),
         sortingFn: "datetime",
@@ -97,17 +92,17 @@ export function LogsTable({ data }: LogsTableProps) {
         accessorKey: "resolved",
         header: "Status",
         cell: (info) => {
-          const resolved = info.getValue() as boolean;
+          const resolved = info.getValue<boolean>();
           return (
             <span
               className={cn(
                 "inline-flex items-center rounded-lg px-[8px] py-[6px] text-xs font-bold",
                 resolved
                   ? "bg-green-100 text-green-700"
-                  : "bg-red-100 text-red-700",
+                  : "bg-gray-100 text-gray-700",
               )}
             >
-              {resolved ? "OPEN" : "CLOSED"}
+              {resolved ? "Resolved" : "Pending"}
             </span>
           );
         },
@@ -118,7 +113,7 @@ export function LogsTable({ data }: LogsTableProps) {
 
   const table = useReactTable({
     columns,
-    data,
+    data: data || [],
     debugTable: true,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -126,14 +121,8 @@ export function LogsTable({ data }: LogsTableProps) {
     state: {
       sorting,
     },
-    enableSorting: false, // - default on/true
-    // enableSortingRemoval: false, //Don't allow - default on/true
-    // isMultiSortEvent: (e) => true, //Make all clicks multi-sort - default requires `shift` key
-    // maxMultiSortColCount: 3, // only allow 3 columns to be sorted at once - default is Infinity
+    enableSorting: true,
   });
-
-  //access sorting state from the table instance
-  console.log(table.getState().sorting);
 
   return (
     <div className="p-4">
