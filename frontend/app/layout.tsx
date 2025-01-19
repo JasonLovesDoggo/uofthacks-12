@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Manrope, Montserrat } from "next/font/google";
-
 import "./globals.css";
 
+import Providers from "./providers";
 import { Toaster } from "@/components/ui/sonner";
 
 // const geistSans = Geist({
@@ -39,7 +39,7 @@ export default function RootLayout({
         className={`${manrope.className} ${montserrat.variable} antialiased`}
       >
         <Toaster richColors position="top-center" theme="light" />
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

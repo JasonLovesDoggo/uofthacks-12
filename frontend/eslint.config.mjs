@@ -5,6 +5,7 @@ export default {
     "next/core-web-vitals",
     "prettier",
     "plugin:tailwindcss/recommended",
+    "plugin:react-hooks/recommended",
   ],
   plugins: ["tailwindcss"],
   rules: {

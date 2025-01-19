@@ -62,7 +62,7 @@ export type OrderItem = z.infer<typeof orderItemSchema>;
 
 export const orderSchema = z.object({
     /** Date of the order */
-    date: z.date(),
+    date: z.coerce.date(),
     /** Merchant */
     merchant: merchantSchema,
     /** Address */

@@ -2,18 +2,26 @@
 
 import { z } from "zod";
 
-export enum MerchantCategory {
-    RETAIL = 'RETAIL',
-    FOOD_AND_DINING = 'FOOD_AND_DINING',
-    SERVICES = 'SERVICES',
-    TRAVEL_AND_ENTERTAINMENT = 'TRAVEL_AND_ENTERTAINMENT',
-    TRANSPORTATION = 'TRANSPORTATION',
-    FINANCIAL_SERVICES = 'FINANCIAL_SERVICES',
-    BUSINESS_AND_B2B = 'BUSINESS_AND_B2B',
-}
+export const MerchantCategoryValues = [
+    'RETAIL',
+    'FOOD_AND_DINING',
+    'SERVICES',
+    'TRAVEL_AND_ENTERTAINMENT',
+    'TRANSPORTATION',
+    'FINANCIAL_SERVICES',
+    'BUSINESS_AND_B2B'
+] as const;
 
-// Zod schema for type validation
-export const MerchantCategorySchema = z.nativeEnum(MerchantCategory);
+export type MerchantCategory = typeof MerchantCategoryValues[number];
 
-// Type for the schema
-export type MerchantCategoryType = z.infer<typeof MerchantCategorySchema>;
+export const MerchantCategorySchema = z.enum(MerchantCategoryValues);
+
+export const MerchantCategory = {
+    RETAIL: 'RETAIL',
+    FOOD_AND_DINING: 'FOOD_AND_DINING',
+    SERVICES: 'SERVICES',
+    TRAVEL_AND_ENTERTAINMENT: 'TRAVEL_AND_ENTERTAINMENT',
+    TRANSPORTATION: 'TRANSPORTATION',
+    FINANCIAL_SERVICES: 'FINANCIAL_SERVICES',
+    BUSINESS_AND_B2B: 'BUSINESS_AND_B2B'
+} as const;
