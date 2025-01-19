@@ -47,10 +47,12 @@ export function LogsTable({ data }: LogsTableProps) {
                 cell: info => {
                     const severity = (info.getValue() as string).toUpperCase();
                     return (
-                        <span className={`inline-flex items-center rounded-md px-[8px] py-[6px] text-xs font-bold ${severity === 'critical'
-                            ? 'bg-red-100 text-red-700'
-                            : 'bg-yellow-100 text-yellow-700'
-                            }`}>
+                        <span className={cn(
+                            "inline-flex items-center rounded-md px-[8px] py-[6px] text-xs font-bold",
+                            severity.toLowerCase() === 'low'
+                                ? "bg-yellow-100 text-yellow-700"
+                                : "bg-red-100 text-red-700"
+                        )}>
                             {severity}
                         </span>
                     )
@@ -87,7 +89,7 @@ export function LogsTable({ data }: LogsTableProps) {
                             "inline-flex items-center rounded-lg px-[8px] py-[6px] text-xs font-bold",
                             resolved ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                         )}>
-                            {resolved ? 'OPEN' : 'CLOSED'}
+                            {resolved ? 'RESOLVED' : 'TO BE REVIEWED'}
                         </span>
                     )
                 },
