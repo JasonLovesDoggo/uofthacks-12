@@ -25,7 +25,7 @@ class Address(TypedDict):
 class OrderItem(TypedDict):
     name: str
     price: float
-    quantity: int
+    quantity: Optional[int]
 
 
 class Order(TypedDict):

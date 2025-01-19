@@ -39,7 +39,7 @@ async def startup() -> None:
         process_emails,
         "interval",
         minutes=5,
-        next_run_time=datetime.now(UTC),
+        # next_run_time=datetime.now(UTC),
         misfire_grace_time=30,
         max_instances=1,
     )
