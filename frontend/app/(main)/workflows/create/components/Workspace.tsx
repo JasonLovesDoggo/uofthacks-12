@@ -31,7 +31,8 @@ interface WorkspaceProps {
   selectedNode: Node | null;
   selectedEdge: Edge | null;
   title: string;
-  onSubmit: (newTitle: string) => void;
+  onUpdateTitle: (newTitle: string) => void;
+  onSubmit: () => void;
 }
 
 export const Workspace = ({
@@ -47,6 +48,7 @@ export const Workspace = ({
   selectedEdge,
   onEdgeClick,
   title,
+  onUpdateTitle,
   onSubmit,
 }: WorkspaceProps) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -58,7 +60,7 @@ export const Workspace = ({
 
   const handleBlur = () => {
     setIsEditing(false);
-    onSubmit(currentTitle);
+    onUpdateTitle(currentTitle);
     toast.success("Workflow title updated");
   };
 
@@ -155,17 +157,7 @@ export const Workspace = ({
           >
             <Trash2 className="size-5" />
           </Button>
-          <Button
-            onClick={() => {
-              console.log("Workflow Details:");
-              console.log("Title:", currentTitle);
-              console.log("Nodes:", nodes);
-              console.log("Edges:", edges);
-              console.log("Selected Node:", selectedNode);
-              console.log("Selected Edge:", selectedEdge);
-              toast.success("Workflow saved");
-            }}
-          >
+          <Button onClick={onSubmit}>
             <Save className="mr-2 h-5 w-5" />
             Save
           </Button>

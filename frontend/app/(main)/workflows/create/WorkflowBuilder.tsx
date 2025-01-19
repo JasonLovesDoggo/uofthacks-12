@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { ReactFlowProvider } from "reactflow";
+import { toast } from "sonner";
 
 import {
   ActionNode,
@@ -69,7 +70,11 @@ const WorkflowBuilder = () => {
           selectedNode={selectedNode}
           selectedEdge={selectedEdge}
           title={workflowTitle}
-          onSubmit={handleTitleUpdate}
+          onUpdateTitle={handleTitleUpdate}
+          onSubmit={() => {
+            console.log("Submitting workflow data:", workflowData);
+            toast.success("Workflow saved");
+          }}
         />
 
         {/* Right sidebar */}
