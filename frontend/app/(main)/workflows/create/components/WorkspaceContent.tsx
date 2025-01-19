@@ -5,6 +5,10 @@ import {
   Edge,
   MiniMap,
   Node,
+  NodeTypes,
+  OnConnect,
+  OnEdgesChange,
+  OnNodesChange,
   ReactFlow,
   useReactFlow,
 } from "reactflow";
@@ -14,10 +18,10 @@ import { EmptyWorkspace } from "./EmptyWorkspace";
 interface WorkspaceContentProps {
   nodes: Node[];
   edges: Edge[];
-  nodeTypes: any;
-  onNodesChange: (changes: any) => void;
-  onEdgesChange: (changes: any) => void;
-  onConnect: (connection: any) => void;
+  nodeTypes: NodeTypes;
+  onNodesChange: OnNodesChange;
+  onEdgesChange: OnEdgesChange;
+  onConnect: OnConnect;
   onNodeClick: (event: React.MouseEvent, node: Node) => void;
   onPaneClick: () => void;
   onEdgeClick: (event: React.MouseEvent, edge: Edge) => void;
@@ -52,7 +56,7 @@ export const WorkspaceContent = ({
       });
 
       // Generate a unique ID for the node
-      const newNode = {
+      const newNode: Node = {
         id: crypto.randomUUID(),
         type,
         position,

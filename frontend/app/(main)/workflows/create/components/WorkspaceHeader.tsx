@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ArrowLeft, Pencil, Save, Trash2 } from "lucide-react";
-import { Edge, Node } from "reactflow";
+import { Edge, Node, OnEdgesChange, OnNodesChange } from "reactflow";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -11,8 +11,8 @@ interface WorkspaceHeaderProps {
   onSubmit: () => void;
   nodes: Node[];
   edges: Edge[];
-  onNodesChange: (changes: any) => void;
-  onEdgesChange: (changes: any) => void;
+  onNodesChange: OnNodesChange;
+  onEdgesChange: OnEdgesChange;
 }
 
 export const WorkspaceHeader = ({
@@ -38,8 +38,20 @@ export const WorkspaceHeader = ({
   };
 
   const handleClearWorkflow = () => {
-    onNodesChange([{ type: "remove", id: nodes.map((node) => node.id) }]);
-    onEdgesChange([{ type: "remove", id: edges.map((edge) => edge.id) }]);
+    // Remove all nodes
+    const nodeChanges = nodes.map((node) => ({
+      type: "remove" as const,
+      id: node.id,
+    }));
+    onNodesChange(nodeChanges);
+
+    // Remove all edges
+    const edgeChanges = edges.map((edge) => ({
+      type: "remove" as const,
+      id: edge.id,
+    }));
+    onEdgesChange(edgeChanges);
+
     toast.success("Workflow cleared");
   };
 

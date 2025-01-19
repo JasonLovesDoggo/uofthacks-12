@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { ReactFlowProvider } from "reactflow";
+import { NodeTypes, ReactFlowProvider } from "reactflow";
 import { toast } from "sonner";
 
 import {
@@ -19,7 +19,7 @@ import {
   useWorkflowTitle,
 } from "./hooks";
 
-const nodeTypes = {
+const nodeTypes: NodeTypes = {
   trigger: TriggerNode,
   condition: ConditionNode,
   action: ActionNode,
