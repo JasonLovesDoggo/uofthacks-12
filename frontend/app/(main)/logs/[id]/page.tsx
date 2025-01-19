@@ -1,10 +1,11 @@
 interface LogDetailsPageProps {
-    params: {
-        id: string;
-    }
+    params: Promise<{ id: string }>
 }
 
-export default function LogDetailsPage({ params: { id } }: LogDetailsPageProps) {
+export default async function LogDetailsPage({
+    params,
+}: LogDetailsPageProps) {
+    const id = (await params).id
     return <div>Log Details {id}</div>;
     // TODO
 }
