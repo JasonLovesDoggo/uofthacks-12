@@ -68,7 +68,18 @@ export async function getMessages(
 
     if (response.ok) {
       const data = await response.json();
-      return data.messages;
+
+      // Fetch details for each message
+      const messageDetailsPromises = data.messages.map(
+        (message: { id: string }) => getMessageDetails(accessToken, message.id),
+      );
+
+      const messageDetails = await Promise.all(messageDetailsPromises);
+
+      // Filter out any null results
+      return messageDetails.filter(
+        (message): message is GmailMessage => message !== null,
+      );
     }
     return null;
   } catch (error) {

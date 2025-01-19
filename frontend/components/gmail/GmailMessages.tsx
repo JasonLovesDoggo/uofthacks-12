@@ -106,11 +106,18 @@ export function GmailMessages({
                     disabled={loading}
                   >
                     <div className="flex items-start justify-between gap-2">
-                      <p className="line-clamp-2 text-sm">{message.snippet}</p>
+                      <p className="line-clamp-2 text-sm">
+                        {message.snippet || "No preview available"}
+                      </p>
                       <time className="shrink-0 text-xs text-gray-500">
-                        {new Date(
-                          Number(message.internalDate),
-                        ).toLocaleDateString()}
+                        {message.internalDate
+                          ? new Date(
+                              parseInt(message.internalDate),
+                            ).toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                            })
+                          : "Unknown date"}
                       </time>
                     </div>
                   </button>
@@ -164,9 +171,14 @@ export function GmailMessages({
                 <div>
                   <dt className="text-gray-500">Date</dt>
                   <dd className="font-medium">
-                    {new Date(
-                      Number(selectedMessage.internalDate),
-                    ).toLocaleString()}
+                    {selectedMessage.internalDate
+                      ? new Date(
+                          parseInt(selectedMessage.internalDate),
+                        ).toLocaleString("en-US", {
+                          dateStyle: "full",
+                          timeStyle: "long",
+                        })
+                      : "Unknown date"}
                   </dd>
                 </div>
                 <div>
