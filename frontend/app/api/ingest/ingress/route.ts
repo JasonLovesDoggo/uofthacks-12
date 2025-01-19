@@ -6,6 +6,8 @@ import { eq } from "drizzle-orm";
 import type { NextRequest } from "next/server";
 import { ZodError } from "zod";
 
+let NEXT_PASSED = false;
+
 export async function POST(
     request: NextRequest
 ): Promise<Response> {
@@ -24,7 +26,11 @@ export async function POST(
                 if (user && user.rule) {
                     const rule = ruleSchema.safeParse(user.rule);
                     if (rule.success) {
-                        const hasPassed = await executeRule(rule.data, order);
+                        // const hasPassed = await executeRule(rule.data, order);
+
+                        // TODO: remove this vv
+                        const hasPassed = NEXT_PASSED;
+                        NEXT_PASSED = !NEXT_PASSED;
 
                         const {
                             date,
