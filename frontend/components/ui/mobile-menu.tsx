@@ -85,7 +85,7 @@ export default function MobileMenu() {
           <div className="flex-1 overflow-y-auto border-t px-6 py-4">
             <nav className="flex flex-col space-y-2">
               <NavLink
-                href="/"
+                href="/dashboard"
                 onClick={() => setIsOpen(false)}
                 className="rounded-lg px-4 py-2"
               >

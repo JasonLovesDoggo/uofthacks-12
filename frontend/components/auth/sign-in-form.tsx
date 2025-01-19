@@ -55,7 +55,7 @@ const SignInForm = ({}: Props) => {
           router.push(data.data.redirect);
         } else if (data.success) {
           toast.success("Welcome back!");
-          router.push("/");
+          router.push("/dashboard");
         } else {
           toast.error(data.message || "Invalid email or password");
         }

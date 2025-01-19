@@ -4,6 +4,7 @@ import type { NextRequest } from "next/server";
 const authPages = [
   "/sign-in",
   "/sign-up",
+  "/", // landing page
   // "/forgot-password",
   // "/email-verification",
   // "/reset-password",
@@ -18,15 +19,11 @@ export async function middleware(req: NextRequest) {
 
   // If the user is authenticated and trying to access an auth page, redirect to dashboard
   if (isAuthenticated(req) && authPages.includes(pathname)) {
-    return NextResponse.redirect(new URL("/", req.url));
+    return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
   // If the user is not authenticated and trying to access a protected route, redirect to login
-  if (
-    !isAuthenticated(req) &&
-    !authPages.includes(pathname) &&
-    !pathname.startsWith("/reset-password/")
-  ) {
+  if (!isAuthenticated(req) && !authPages.includes(pathname)) {
     return NextResponse.redirect(new URL("/sign-in", req.url));
   }
 
