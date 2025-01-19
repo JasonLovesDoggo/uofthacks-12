@@ -8,9 +8,10 @@ class Merchant(BaseModel):
 
 
 class Address(BaseModel):
+    number: str
     street: str
     city: str
-    state: str
+    province: str
     code: str
     country: str
 

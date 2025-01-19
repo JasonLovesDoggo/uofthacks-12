@@ -9,7 +9,7 @@ export function cn(...inputs: ClassValue[]) {
 
 function normalizeString(str: string): string {
   // Remove extra whitespace and convert to lowercase
-  return str.trim().replace(/\s+/g, ' ').toLowerCase();
+  return str.trim().replace(/\s+/g, " ").toLowerCase();
 }
 
 /** Compares two strings, ignoring case and extra whitespace */

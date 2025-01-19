@@ -35,12 +35,12 @@ const BlockPaletteItem = ({
 
   return (
     <div
-      className={`flex cursor-grab items-center gap-3 rounded-sm border bg-white p-3 shadow-sm transition-colors hover:bg-gray-50 active:cursor-grabbing`}
+      className={`flex cursor-grab items-center gap-3 rounded-sm border bg-white p-4 shadow-sm transition-colors hover:bg-gray-50 active:cursor-grabbing`}
       draggable
       onDragStart={onDragStart}
     >
-      <div className="flex items-center gap-2 text-gray-500">
-        <GripVertical className="size-4" />
+      <div className="flex items-center gap-2 text-gray-400">
+        <GripVertical className="size-5" />
       </div>
       <div className="flex items-center gap-3">
         <div

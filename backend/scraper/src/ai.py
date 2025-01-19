@@ -25,7 +25,7 @@ class Address(TypedDict):
 class OrderItem(TypedDict):
     name: str
     price: float
-    quantity: int
+    quantity: Optional[int]
 
 
 class Order(TypedDict):
@@ -101,3 +101,68 @@ def detect_if_ecommerce_email(email_content: str) -> bool:
         return "true" in result  # don't need to exactly match result
     except Exception as e:
         raise ValueError(f"Failed to parse response from Gemini API: {e}")
+
+
+async def generate_workflow_node_from_text(prompt: str) -> dict:
+    """
+    Generates a WorkflowNode object based on a natural language request using the Gemini API.
+    """
+    try:
+        # Define the system prompt to guide the model
+        system_prompt = """
+        You are a workflow generator. Given a natural language request, generate a valid WorkflowNode object in JSON format.
+        The WorkflowNode can be of type "trigger", "condition", or "action". Ensure the structure adheres to the following rules:
+        - A "trigger" node starts the workflow.
+        - A "condition" node must have a "field", "operator", and "value" in its data.
+        - An "action" node must have a "selectedAction" in its data.
+        - Each node must have a unique "id" (UUID).
+        - Use the "next" field to connect nodes in the workflow.
+        
+        - Please ensure the response is valid JSON only, no additional text. We do not need formatting or comments.
+
+        Example output:
+        {
+            "id": "249e053b-eda0-4aeb-899f-ec1a429be22b",
+            "type": "trigger",
+            "data": {},
+            "next": [
+                {
+                    "id": "03e2e739-874d-42a5-89b2-4b5862f9ba5d",
+                    "type": "condition",
+                    "data": {
+                        "field": "amount",
+                        "operator": "greater",
+                        "value": "200"
+                    },
+                    "next": [
+                        {
+                            "id": "8394f3fa-df42-4848-8b0e-9696efe1ad5a",
+                            "type": "action",
+                            "data": {
+                                "selectedAction": "sendEmail"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+        """
+
+        # Combine the system prompt with the user's request
+        full_prompt = f"{system_prompt}\n\nUser Request: {prompt}"
+
+        # Call the Gemini API
+        response = model.generate_content(full_prompt)
+
+        # Parse the response into a Python dictionary
+        workflow_node = json.loads(response.text)
+
+        # Validate the structure (basic validation)
+        if not isinstance(workflow_node, dict):
+            raise ValueError("Invalid response format from Gemini API")
+
+        return workflow_node
+
+    except Exception as e:
+        print(f"Error generating workflow node: {e}")
+        return None

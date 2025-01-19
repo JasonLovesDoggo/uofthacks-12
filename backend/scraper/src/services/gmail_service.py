@@ -1,3 +1,4 @@
+import base64
 import traceback
 
 from google.oauth2.credentials import Credentials
@@ -18,6 +19,28 @@ log = logging.getLogger(__name__)
 
 def get_gmail_service(credentials):
     return build("gmail", "v1", credentials=credentials, static_discovery=False)
+
+
+def extract_email_content(payload):
+    """
+    Extracts the email content from the payload.
+    """
+    if 'parts' in payload:
+        for part in payload['parts']:
+            if part['mimeType'] == 'text/plain':
+                body = part['body']['data']
+                return base64.urlsafe_b64decode(body).decode('utf-8')
+            elif part['mimeType'] == 'text/html':
+                body = part['body']['data']
+                return base64.urlsafe_b64decode(body).decode('utf-8')
+            elif 'parts' in part:
+                # Recursively handle nested parts
+                return extract_email_content(part)
+    else:
+        if payload['mimeType'] == 'text/plain' or payload['mimeType'] == 'text/html':
+            body = payload['body']['data']
+            return base64.urlsafe_b64decode(body).decode('utf-8')
+    return ""
 
 
 async def poll_gmail_accounts():
@@ -55,7 +78,7 @@ async def poll_gmail_accounts():
                 results = (
                     service.users()
                     .messages()
-                    .list(userId="me", labelIds=["UNREAD", "INBOX"])
+                    .list(userId="me", labelIds=["UNREAD", "INBOX"], maxResults=10)
                     .execute()
                 )
 
@@ -65,17 +88,22 @@ async def poll_gmail_accounts():
                 )
 
                 for msg in messages:
-                    print(f"{account.userId}: {msg=}")
                     try:
                         msg_data = (
                             service.users()
                             .messages()
-                            .get(userId="me", id=msg["id"])
+                            .get(userId="me", id=msg["id"], format="full")
                             .execute()
                         )
-                        email_content = msg_data.get("raw", "")
+                        if msg_data["internalDate"] <= settings.EPOCH_START_TIME:
+                            # email was sent before start time of this project
+                            continue
+
+                        email_content = extract_email_content(msg_data.get("payload", {}))
+
+                        # print(f"{account.userId}: {email_content=}")
                         if not detect_if_ecommerce_email(email_content):
-                            log.debug(f"NOT ECOMMERCE: {email_content[:]}")
+                            log.debug(f"NOT ECOMMERCE: {email_content[:20]}")
                             continue
 
                         # Process the email content with AI

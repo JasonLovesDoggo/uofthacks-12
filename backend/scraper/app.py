@@ -1,5 +1,6 @@
 import sys
 from datetime import datetime, UTC
+from typing import Dict, Any
 
 import uvicorn
 from apscheduler.job import Job
@@ -10,6 +11,7 @@ from litestar.openapi.plugins import ScalarRenderPlugin
 from litestar.controller import Controller
 
 from schemas.tasks import JobDetailsResponse
+from src.ai import generate_workflow_node_from_text
 from src.services.gmail_service import poll_gmail_accounts
 from config.settings import get_settings
 import logging
@@ -39,7 +41,7 @@ async def startup() -> None:
         process_emails,
         "interval",
         minutes=5,
-        next_run_time=datetime.now(UTC),
+        # next_run_time=datetime.now(UTC),
         misfire_grace_time=30,
         max_instances=1,
     )
@@ -71,9 +73,16 @@ class EmailProcessingController(Controller):
             "interval": job.trigger.interval.total_seconds(),
         }
 
+@post("/generate-workflow")
+async def generate_workflow(prompt: str) -> Dict[str, Any]:
+    if not prompt:
+        return {"error": "No prompt provided"}
+
+    return await generate_workflow_node_from_text(prompt)
+
 
 app = Litestar(
-    route_handlers=[EmailProcessingController],
+    route_handlers=[EmailProcessingController, generate_workflow],
     on_startup=[startup],
     debug=True,
     openapi_config=OpenAPIConfig(

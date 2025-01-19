@@ -1,17 +1,29 @@
 import { NextResponse } from "next/server";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { google } from "googleapis";
 
+import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { accounts } from "@/lib/db/schema";
 
 export async function POST() {
   try {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    }
+
     // Get the user's account record
     const [account] = await db
       .select()
       .from(accounts)
-      .where(eq(accounts.provider, "google"))
+      .where(
+        and(
+          eq(accounts.provider, "google"),
+          eq(accounts.userId, session.user.id),
+        ),
+      )
       .limit(1);
 
     if (!account || !account.refresh_token) {
@@ -45,8 +57,10 @@ export async function POST() {
           : null,
       })
       .where(
-        eq(accounts.provider, account.provider) &&
-          eq(accounts.providerAccountId, account.providerAccountId),
+        and(
+          eq(accounts.provider, "google"),
+          eq(accounts.userId, session.user.id),
+        ),
       );
 
     return NextResponse.json({
