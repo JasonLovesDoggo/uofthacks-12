@@ -19,8 +19,6 @@ export const WorkflowDataDisplay = ({
   data,
   className,
 }: WorkflowDataDisplayProps) => {
-  console.log("DATA", data);
-
   const formatNodeData = (node: WorkflowNode) => {
     switch (node.type) {
       case "trigger":
