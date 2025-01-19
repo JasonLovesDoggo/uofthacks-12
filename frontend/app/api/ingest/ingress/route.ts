@@ -55,24 +55,6 @@ export async function POST(
                     status: 500
                 });
             }
-            const result = await executeRule(rule, order);
-
-            if (result) {
-                try {
-                    await db.insert(alerts).values({
-                        email,
-                        rule: rule.toString(),
-                        order
-                    });
-                } catch (error: unknown) {
-                    console.error(error);
-                    return Response.json({
-                        status: 500
-                    }, {
-                        status: 500
-                    });
-                }
-            }
         }
 
         return Response.json({
