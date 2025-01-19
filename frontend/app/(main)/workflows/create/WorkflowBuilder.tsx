@@ -1,15 +1,7 @@
 "use client";
 
-import React, { useCallback, useState } from "react";
-import {
-  addEdge,
-  Connection,
-  Edge,
-  Node,
-  ReactFlowProvider,
-  useEdgesState,
-  useNodesState,
-} from "reactflow";
+import React from "react";
+import { ReactFlowProvider } from "reactflow";
 
 import {
   ActionNode,
@@ -19,6 +11,11 @@ import {
 
 import { BlockPalette } from "./components/BlockPalette";
 import { Workspace } from "./components/Workspace";
+import {
+  useFlowManagement,
+  useSelectionManagement,
+  useWorkflowTitle,
+} from "./hooks";
 
 const nodeTypes = {
   trigger: TriggerNode,
@@ -26,109 +23,21 @@ const nodeTypes = {
   action: ActionNode,
 };
 
-const initialNodes: Node[] = [];
-const initialEdges: Edge[] = [];
-
 const WorkflowBuilder = () => {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  const [selectedNode, setSelectedNode] = useState<Node | null>(null);
-  const [selectedEdge, setSelectedEdge] = useState<Edge | null>(null);
-  const [workflowTitle, setWorkflowTitle] = useState("New Workflow");
+  const {
+    nodes,
+    edges,
+    setNodes,
+    setEdges,
+    handleNodesChange,
+    onEdgesChange,
+    onConnect,
+  } = useFlowManagement();
 
-  const handleTitleUpdate = (newTitle: string) => {
-    setWorkflowTitle(newTitle);
-  };
+  const { selectedNode, selectedEdge, onNodeClick, onEdgeClick, onPaneClick } =
+    useSelectionManagement(setNodes, setEdges);
 
-  const onConnect = useCallback(
-    (params: Connection) => setEdges((eds) => addEdge(params, eds)),
-    [setEdges],
-  );
-
-  const handleNodesChange = useCallback(
-    (changes: any[]) => {
-      // Process all changes and track if we need to update trigger node state
-      let shouldUpdateTriggerState = false;
-
-      changes.forEach((change) => {
-        if (change.type === "add" && change.item.type === "trigger") {
-          // Check current nodes for existing trigger
-          const hasTrigger = nodes.some((node) => node.type === "trigger");
-          if (hasTrigger) {
-            // Remove the change to prevent adding multiple triggers
-            changes = changes.filter((c) => c !== change);
-          } else {
-            shouldUpdateTriggerState = true;
-          }
-        } else if (change.type === "remove") {
-          // Check if we're removing a trigger node
-          const removedNode = nodes.find((n) => n.id === change.id);
-          if (removedNode?.type === "trigger") {
-            shouldUpdateTriggerState = true;
-          }
-        }
-      });
-
-      // Apply the filtered changes
-      onNodesChange(changes);
-
-      // Update trigger state if needed
-      if (shouldUpdateTriggerState) {
-        // Use the latest nodes state to determine if we have a trigger
-        setNodes((currentNodes) => {
-          return currentNodes;
-        });
-      }
-    },
-    [nodes, onNodesChange, setNodes],
-  );
-
-  // Handle node selection
-  const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
-    setSelectedNode(node);
-  }, []);
-
-  // Handle edge selection
-  const onEdgeClick = useCallback((event: React.MouseEvent, edge: Edge) => {
-    setSelectedEdge(edge);
-    setSelectedNode(null);
-  }, []);
-
-  // Handle background click to deselect
-  const onPaneClick = useCallback(() => {
-    setSelectedNode(null);
-    setSelectedEdge(null);
-  }, []);
-
-  // Handle delete key press
-  const onKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      if (event.key === "Delete" || event.key === "Backspace") {
-        if (selectedNode) {
-          setNodes((nds) => {
-            const updatedNodes = nds.filter(
-              (node) => node.id !== selectedNode.id,
-            );
-            return updatedNodes;
-          });
-          setSelectedNode(null);
-        }
-        if (selectedEdge) {
-          setEdges((eds) => eds.filter((edge) => edge.id !== selectedEdge.id));
-          setSelectedEdge(null);
-        }
-      }
-    },
-    [selectedNode, selectedEdge, setNodes, setEdges],
-  );
-
-  // Add and remove keyboard listener
-  React.useEffect(() => {
-    window.addEventListener("keydown", onKeyDown);
-    return () => {
-      window.removeEventListener("keydown", onKeyDown);
-    };
-  }, [onKeyDown]);
+  const { workflowTitle, handleTitleUpdate } = useWorkflowTitle();
 
   return (
     <ReactFlowProvider>
