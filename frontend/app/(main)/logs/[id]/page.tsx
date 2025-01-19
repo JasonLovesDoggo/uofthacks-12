@@ -3,10 +3,9 @@ import { eq } from "drizzle-orm";
 
 import { db } from "@/lib/db";
 import { orders } from "@/lib/db/schema";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
-export default async function OrderPage({
+export default async function LogPage({
   params,
 }: {
   params: Promise<{ id: string }>;
@@ -22,99 +21,159 @@ export default async function OrderPage({
   }
 
   return (
-    <div className="container mx-auto py-8">
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Order Details</h1>
-          <p className="text-muted-foreground">
-            Order from {order.merchantName} on {order.date.toLocaleDateString()}
-          </p>
+    <div className="mx-auto max-w-[1400px] p-6">
+      {/* Header */}
+      <div className="mb-8 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <h1 className="text-xl font-medium">{order.merchantName}</h1>
+          <span className="text-gray-500">{id}</span>
         </div>
-        <div className="flex items-center gap-4">
-          <div
-            className={`rounded-full px-3 py-1 text-sm ${
-              order.severity === "critical"
-                ? "bg-red-100 text-red-800"
-                : "bg-yellow-100 text-yellow-800"
-            }`}
-          >
-            {order.severity}
-          </div>
-          <div
-            className={`rounded-full px-3 py-1 text-sm ${
-              order.resolved
-                ? "bg-green-100 text-green-800"
-                : "bg-gray-100 text-gray-800"
-            }`}
-          >
-            {order.resolved ? "Resolved" : "Pending"}
-          </div>
-        </div>
+        <button className="font-medium text-blue-600">View Original</button>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card className="p-6">
-          <h2 className="mb-4 text-xl font-semibold">Merchant Information</h2>
-          <div className="space-y-2">
-            <p>
-              <span className="font-medium">Name:</span> {order.merchantName}
-            </p>
-            <p>
-              <span className="font-medium">Category:</span>{" "}
-              {order.merchantCategory}
-            </p>
-            <p>
-              <span className="font-medium">Location:</span>{" "}
-              {order.merchantLocation}
-            </p>
-            <div className="mt-4">
-              <h3 className="mb-2 font-medium">Address:</h3>
-              <p>
-                {order.merchantAddress.number} {order.merchantAddress.street}
+      {/* Main Content */}
+      <div className="grid grid-cols-[300px_1fr_1fr] gap-8">
+        {/* Reasons for Flagging */}
+        <div className="space-y-4">
+          <h2 className="text-sm font-medium text-gray-500">
+            REASONS FOR FLAGGING
+          </h2>
+          {order.severity === "critical" && (
+            <Card className="space-y-2 p-4">
+              <h3 className="font-medium">Contact information</h3>
+              <p className="text-sm text-gray-600">
+                Not your usual contact information
               </p>
-              <p>
-                {order.merchantAddress.city}, {order.merchantAddress.province}{" "}
-                {order.merchantAddress.code}
-              </p>
-              <p>{order.merchantAddress.country}</p>
+            </Card>
+          )}
+          {Number(order.total) > 3000 && (
+            <Card className="space-y-2 p-4">
+              <h3 className="font-medium">Fails price criteria</h3>
+              <p className="text-sm text-gray-600">Goes over $3000</p>
+            </Card>
+          )}
+          <Card className="p-4">
+            <h3 className="mb-3 font-medium">Is this you?</h3>
+            <div className="flex gap-2">
+              <button className="rounded-md bg-gray-200 px-4 py-1 text-sm">
+                YES
+              </button>
+              <button className="rounded-md bg-gray-200 px-4 py-1 text-sm">
+                NO
+              </button>
             </div>
-          </div>
-        </Card>
+          </Card>
+        </div>
 
-        <Card className="p-6">
-          <h2 className="mb-4 text-xl font-semibold">Order Summary</h2>
-          <div className="space-y-4">
-            <div>
-              <h3 className="mb-2 font-medium">Order Items:</h3>
-              <ul className="space-y-2">
-                {order.orderItems.map((item, index) => (
-                  <li key={index} className="flex items-center justify-between">
-                    <div>
-                      <span>{item.name}</span>
-                      <span className="ml-2 text-sm text-muted-foreground">
-                        x{item.quantity}
-                      </span>
-                    </div>
-                    <span>${item.price.toFixed(2)}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="border-t pt-4">
-              <div className="flex justify-between font-semibold">
-                <span>Total:</span>
-                <span>${Number(order.total).toFixed(2)}</span>
+        {/* Details */}
+        <div className="space-y-4">
+          <h2 className="text-sm font-medium text-gray-500">DETAILS</h2>
+          <Card className="p-6">
+            <h3 className="mb-4 text-lg font-medium">Details</h3>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="mb-1 text-sm text-gray-500">Date</p>
+                  <p>{order.date.toLocaleDateString()}</p>
+                </div>
+                <div>
+                  <p className="mb-1 text-sm text-gray-500">Time</p>
+                  <p>{order.date.toLocaleTimeString()}</p>
+                </div>
+              </div>
+              <div>
+                <p className="mb-1 text-sm text-gray-500">Location</p>
+                <p>{order.merchantLocation}</p>
+              </div>
+              <div>
+                <p className="mb-1 text-sm text-gray-500">Shipping Address</p>
+                <p>{`${order.merchantAddress.number} ${order.merchantAddress.street}, ${order.merchantAddress.city}`}</p>
+              </div>
+              <div>
+                <p className="mb-1 text-sm text-gray-500">
+                  Contact Information
+                </p>
+                <div className="flex items-center gap-2">
+                  <p>{"437-111-1111"}</p>
+                  {order.severity === "critical" && (
+                    <span className="text-red-500">⚠</span>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        </Card>
-      </div>
+          </Card>
 
-      <div className="mt-6 flex justify-end">
-        <Button variant="outline" className="mr-4">
-          Back
-        </Button>
-        {!order.resolved && <Button>Mark as Resolved</Button>}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-medium text-gray-500">
+                ORDER SUMMARY
+              </h2>
+              <div className="flex items-center gap-2">
+                {Number(order.total) > 3000 && (
+                  <span className="text-red-500">⚠</span>
+                )}
+                <span className="text-sm font-medium">
+                  TOTAL: ${Number(order.total).toFixed(2)}
+                </span>
+              </div>
+            </div>
+            <Card className="p-6">
+              <div className="grid grid-cols-[1fr_100px_100px] gap-4 text-sm font-medium text-gray-500">
+                <div>Order</div>
+                <div>Qt</div>
+                <div>Price</div>
+              </div>
+              <div className="mt-4 space-y-4">
+                {order.orderItems.map((item, index) => (
+                  <div key={index} className="grid grid-cols-[1fr_100px_100px]">
+                    <div>{item.name}</div>
+                    <div>{item.quantity}</div>
+                    <div>{item.price}</div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
+        </div>
+
+        {/* Original Email */}
+        <div className="space-y-4">
+          <h2 className="text-sm font-medium text-gray-500">ORIGINAL EMAIL</h2>
+          <Card className="p-6">
+            <div className="flex items-start gap-4">
+              <div className="flex h-10 w-10 items-center justify-center rounded-md bg-purple-700 text-white">
+                A
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium">{order.merchantName}</p>
+                    <p className="text-sm text-gray-500">
+                      your_order_CAEN@orders.apple.com
+                    </p>
+                    <p className="text-sm text-blue-600">Hide details</p>
+                  </div>
+                  <span className="text-gray-400">↗</span>
+                </div>
+                <div className="mt-4">
+                  <p className="text-sm text-gray-500">
+                    To: ilastkim@gmail.com
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Date: {order.date.toLocaleDateString()},{" "}
+                    {order.date.toLocaleTimeString()}
+                  </p>
+                </div>
+                <div className="mt-6">
+                  <h3 className="mb-2 text-lg">Thank you for your order.</h3>
+                  <p className="text-sm text-gray-600">
+                    We&apos;ll let you know when your items are on their way.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </div>
       </div>
     </div>
   );
