@@ -30,7 +30,7 @@ const AuthFooter = ({
       )}
       {showSignUp && (
         <p className="text-center text-sm text-muted-foreground">
-          New to AppName?{" "}
+          New to FlowShield?{" "}
           <Link
             href="/sign-up"
             className="font-medium text-primary transition-all hover:text-primary/80 hover:underline"
