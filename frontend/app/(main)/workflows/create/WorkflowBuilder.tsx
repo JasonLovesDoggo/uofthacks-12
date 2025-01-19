@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { NodeTypes, ReactFlowProvider } from "reactflow";
-import { toast } from "sonner";
 
 import {
   ActionNode,
@@ -15,6 +14,7 @@ import { BlockPalette } from "./components/BlockPalette";
 import { Workspace } from "./components/Workspace";
 import {
   useFlowManagement,
+  useFlowSubmission,
   useSelectionManagement,
   useWorkflowTitle,
 } from "./hooks";
@@ -26,6 +26,7 @@ const nodeTypes: NodeTypes = {
 };
 
 const WorkflowBuilder = () => {
+  const { handleSubmit } = useFlowSubmission();
   const {
     nodes,
     edges,
@@ -71,10 +72,7 @@ const WorkflowBuilder = () => {
           selectedEdge={selectedEdge}
           title={workflowTitle}
           onUpdateTitle={handleTitleUpdate}
-          onSubmit={() => {
-            console.log("Submitting workflow data:", workflowData);
-            toast.success("Workflow saved");
-          }}
+          onSubmit={() => handleSubmit(workflowData)}
         />
 
         {/* Right sidebar */}

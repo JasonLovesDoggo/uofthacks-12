@@ -77,11 +77,11 @@ export const ActionNode = ({
               <SelectValue placeholder="Select Action" />
             </SelectTrigger>
             <SelectContent>
-              {data.actions?.map((action) => (
-                <SelectItem key={action} value={action}>
-                  {action}
-                </SelectItem>
-              ))}
+              <SelectItem value="sendEmail">Send Email</SelectItem>
+              <SelectItem value="sendMessage">Send Message</SelectItem>
+              <SelectItem value="rollbackTransaction">
+                Rollback Transaction
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
