@@ -83,7 +83,7 @@ async def generate_workflow(prompt: str) -> Dict[str, Any]:
 
 app = Litestar(
     route_handlers=[EmailProcessingController, generate_workflow],
-    on_startup=[startup],
+    # on_startup=[startup],
     debug=True,
     openapi_config=OpenAPIConfig(
         title="Email Processor API",
