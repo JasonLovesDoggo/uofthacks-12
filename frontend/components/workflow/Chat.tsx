@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useFlowManagement } from "@/hooks";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { Edge, Node } from "reactflow";
 import { z } from "zod";
 
 import { cn } from "@/lib/utils";
@@ -30,9 +32,63 @@ type ChatMessage = {
   status?: "typing" | "error";
 };
 
-export const Chat = () => {
+export const Chat = ({
+  setEdges,
+  setNodes,
+}: {
+  setNodes: React.Dispatch<React.SetStateAction<Node[]>>;
+  setEdges: React.Dispatch<React.SetStateAction<Edge[]>>;
+}) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  // const { setNodes, setEdges } = useFlowManagement();
+
+  // Convert workflow tree to ReactFlow nodes and edges
+  const convertWorkflowToFlow = (workflowNode: any) => {
+    const nodes: Node[] = [];
+    const edges: Edge[] = [];
+
+    // Start trigger node at center of workspace
+    const initialPosition = { x: 400, y: 50 };
+    const NODE_WIDTH = 300;
+    const VERTICAL_SPACING = 200;
+
+    const processNode = (node: any, position = initialPosition) => {
+      // Create ReactFlow node
+      nodes.push({
+        id: node.id,
+        type: node.type,
+        position,
+        data: node.data || {},
+      });
+
+      // Process child nodes
+      if (node.next && node.next.length > 0) {
+        node.next.forEach((childNode: any, index: number) => {
+          // Position child node below parent
+          const childPosition = {
+            x:
+              position.x +
+              (index - (node.next.length - 1) / 2) * (NODE_WIDTH + 50),
+            y: position.y + VERTICAL_SPACING,
+          };
+
+          // Create edge from parent to child
+          edges.push({
+            id: `e${node.id}-${childNode.id}`,
+            source: node.id,
+            target: childNode.id,
+          });
+
+          // Process child node recursively
+          processNode(childNode, childPosition);
+        });
+      }
+    };
+
+    processNode(workflowNode);
+    return { nodes, edges };
+  };
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -70,15 +126,36 @@ export const Chat = () => {
 
       const json = await response.json();
 
-      // Replace typing message with actual response
-      setMessages((prev) => [
-        ...prev.slice(0, -1),
-        {
-          sender: "system",
-          content: JSON.stringify(json.data, null, 2),
-        },
-      ]);
+      if (json.success && json.data) {
+        console.log("API Response:", json.data);
+
+        // Convert workflow to ReactFlow format
+        const { nodes: flowNodes, edges: flowEdges } = convertWorkflowToFlow(
+          json.data,
+        );
+
+        console.log("Generated Nodes:", flowNodes);
+        console.log("Generated Edges:", flowEdges);
+
+        // Update flow - use direct state update to bypass trigger node restriction
+        setNodes((prevNodes) => [...prevNodes, ...flowNodes]);
+        setEdges((prevEdges) => [...prevEdges, ...flowEdges]);
+
+        // Update chat messages
+        setMessages((prev) => [
+          ...prev.slice(0, -1),
+          {
+            sender: "system",
+            content:
+              "Workflow generated successfully! Check the workspace to see the result.",
+          },
+        ]);
+      } else {
+        throw new Error(json.error || "Failed to generate workflow");
+      }
     } catch (error) {
+      console.error("error", error);
+
       setMessages((prev) => [
         ...prev.slice(0, -1),
         {

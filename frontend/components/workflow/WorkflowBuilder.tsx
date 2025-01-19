@@ -98,7 +98,7 @@ const WorkflowBuilder = () => {
               )}
             </TabsContent>
             <TabsContent value="chat" className="h-[calc(100%-64px)]">
-              <Chat />
+              <Chat setNodes={setNodes} setEdges={setEdges} />
             </TabsContent>
           </Tabs>
         </div>

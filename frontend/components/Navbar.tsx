@@ -12,7 +12,7 @@ type Props = {};
 const Navbar = ({}: Props) => {
   return (
     <header className="hover:border-gradient-to-r fixed left-0 top-0 z-40 w-full border-b border-transparent bg-background/95 shadow-md backdrop-blur transition-all duration-300 hover:border-b hover:from-primary/10 hover:via-primary/20 hover:to-primary/10 supports-[backdrop-filter]:bg-background/60">
-      <div className="container relative mx-auto flex h-16 max-w-screen-xl items-center justify-between px-4 md:h-20 md:px-8">
+      <div className="container relative mx-auto flex h-16 max-w-screen-2xl items-center justify-between px-4 md:h-20 md:px-8">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
           <Image

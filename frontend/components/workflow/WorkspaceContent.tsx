@@ -94,6 +94,10 @@ export const WorkspaceContent = ({
         onNodeClick={onNodeClick}
         onPaneClick={onPaneClick}
         fitView
+        fitViewOptions={{ padding: 0.5 }}
+        minZoom={0.1}
+        maxZoom={2}
+        defaultViewport={{ x: 0, y: 0, zoom: 1 }}
         onEdgeClick={onEdgeClick}
         multiSelectionKeyCode={null}
       >
