@@ -1,9 +1,21 @@
-import { boolean, integer, jsonb, numeric, pgEnum, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
-import type { AdapterAccountType } from "next-auth/adapters";
-import { Address, Order, OrderItem } from "@/lib/models/transactions";
-import { Rule } from "../rules";
 import { relations } from "drizzle-orm";
+import {
+  boolean,
+  integer,
+  jsonb,
+  numeric,
+  pgEnum,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+} from "drizzle-orm/pg-core";
+import type { AdapterAccountType } from "next-auth/adapters";
+
+import { Address, OrderItem } from "@/lib/models/transactions";
+
 import { MerchantCategoryValues } from "../models/category";
+import { Rule } from "../rules";
 
 export const users = pgTable("user", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -72,8 +84,11 @@ export const verificationTokens = pgTable("verificationToken", {
   expires: timestamp("expires").notNull(),
 });
 
-export const merchantCategoryEnum = pgEnum("merchant_category", MerchantCategoryValues);
-export const severityEnum = pgEnum("severity", ['low', 'critical']);
+export const merchantCategoryEnum = pgEnum(
+  "merchant_category",
+  MerchantCategoryValues,
+);
+export const severityEnum = pgEnum("severity", ["low", "critical"]);
 export const orders = pgTable("order", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("userId").notNull(),
