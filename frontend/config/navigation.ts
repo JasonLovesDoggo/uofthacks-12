@@ -12,7 +12,7 @@ export const NAV_LINKS = [
     label: "Logs",
   },
   {
-    href: "/settings",
+    href: "/workflows/create",
     label: "Settings",
   },
 ] as const;
